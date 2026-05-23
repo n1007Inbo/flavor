@@ -18,6 +18,23 @@ export default function PostContent({ content = '' }) {
       const doc = parser.parseFromString(content, 'text/html');
       const body = doc.body;
 
+      // Strip ALL native WP Recipe Maker (WPRM) recipe blocks to prevent duplicate recipe cards.
+      // Our custom RecipeDetailContainer already renders the parsed recipe data separately.
+      const wprmSelectors = [
+        '.wprm-recipe-container',
+        '.wprm-recipe',
+        'div[data-recipe-id]',
+        '.wprm-recipe-roundup-item',
+        '.wprm-print-recipe-shortcode',
+        '.wprm-recipe-jump',
+        '.wprm-jump-to-recipe-shortcode',
+        '.wprm-nutrition-label-container'
+      ];
+      wprmSelectors.forEach(selector => {
+        const elements = body.querySelectorAll(selector);
+        elements.forEach(el => el.remove());
+      });
+
       // Select all images, paragraphs containing images, and figure elements
       const imageElements = Array.from(body.querySelectorAll('figure:has(img), p:has(img), img')).filter(el => {
         // Keep elements that are direct children of the body, or immediate wrappers, to prevent breaking small grids

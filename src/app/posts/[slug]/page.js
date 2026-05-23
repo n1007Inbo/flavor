@@ -6,6 +6,9 @@ import styles from './page.module.css';
 // Enable dynamic routing fallback so that new or older posts build on-demand instantly
 export const dynamicParams = true;
 
+// ISR: Serve cached pages instantly from edge, rebuild in background every 60 seconds
+export const revalidate = 60;
+
 // Pre-generate static paths (empty array enforces on-demand generation to prevent remote WordPress rate-limiting timeouts)
 export async function generateStaticParams() {
   return [];

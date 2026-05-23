@@ -86,7 +86,7 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
     window.print();
   };
 
-  // Generate dynamic, meaningful title headers for instructions steps based on content keywords
+  // Generate dynamic, meaningful title headers for instruction steps based on actual content keywords
   const getStepHeader = (step, index) => {
     let text = "";
     if (typeof step === 'string') {
@@ -98,13 +98,42 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
     if (!text) return `STEP ${index + 1}`;
     
     const sLower = text.toLowerCase();
-    if (index === 0) return "SAUTE & START";
-    if (index === 1) return "TOAST THE BASE";
-    if (index === 2) return "DEGLAZE AND SIMMER";
-    if (index === 3) return "THE FINISHING TOUCH";
-    if (index === 4) return "SERVE AND GARNISH";
+
+    // Try to extract an existing header pattern like "SAUTE THE MUSHROOMS:" from the step text
+    const headerMatch = text.match(/^([A-Z][A-Z\s&']{3,30})[:\-\.]/);
+    if (headerMatch) {
+      return headerMatch[1].trim();
+    }
+
+    // Keyword-based dynamic header generation from instruction content
+    const keywordMap = [
+      { keywords: ['preheat', 'oven'], header: 'PREHEAT & PREPARE' },
+      { keywords: ['sauté', 'saute', 'sear'], header: 'SAUTÉ & SEAR' },
+      { keywords: ['boil', 'water', 'blanch'], header: 'BOIL & BLANCH' },
+      { keywords: ['mix', 'combine', 'whisk', 'stir together'], header: 'MIX & COMBINE' },
+      { keywords: ['bake', 'oven'], header: 'BAKE TO PERFECTION' },
+      { keywords: ['toast', 'brown'], header: 'TOAST THE BASE' },
+      { keywords: ['simmer', 'deglaze', 'reduce'], header: 'SIMMER & REDUCE' },
+      { keywords: ['fold', 'gently'], header: 'FOLD & FINISH' },
+      { keywords: ['serve', 'plate', 'garnish'], header: 'SERVE & GARNISH' },
+      { keywords: ['cool', 'rest', 'chill'], header: 'REST & COOL' },
+      { keywords: ['chop', 'dice', 'mince', 'slice', 'cut'], header: 'PREP & CHOP' },
+      { keywords: ['marinate', 'season', 'rub', 'coat'], header: 'SEASON & MARINATE' },
+      { keywords: ['fry', 'deep fry', 'pan fry'], header: 'FRY TO GOLDEN' },
+      { keywords: ['grill', 'char', 'barbecue'], header: 'GRILL & CHAR' },
+      { keywords: ['cream', 'butter', 'frosting', 'frost'], header: 'CREAM & FROST' },
+      { keywords: ['pour', 'drizzle', 'glaze'], header: 'GLAZE & DRIZZLE' },
+      { keywords: ['knead', 'dough', 'rise'], header: 'KNEAD & RISE' },
+      { keywords: ['layer', 'assemble', 'stack'], header: 'LAYER & ASSEMBLE' },
+    ];
+
+    for (const entry of keywordMap) {
+      if (entry.keywords.some(kw => sLower.includes(kw))) {
+        return entry.header;
+      }
+    }
     
-    // Fallback extraction of first 3 words in uppercase
+    // Fallback: extract first 3 meaningful words in uppercase
     const words = text.split(' ').slice(0, 3).join(' ').toUpperCase().replace(/[^A-Z\s]/g, '');
     return words || `STEP ${index + 1}`;
   };
