@@ -47,7 +47,10 @@ const MOCK_POSTS = [
     author: "Alina",
     category: "Desserts",
     readTime: "8 min read",
-    tags: ["Cupcakes", "Baking", "Cream Cheese"]
+    tags: ["Cupcakes", "Baking", "Cream Cheese"],
+    cuisine: "Italian",
+    mealType: "Dinner",
+    difficulty: "Easy"
   },
   {
     id: 2,
@@ -86,7 +89,10 @@ const MOCK_POSTS = [
     author: "Alina",
     category: "Desserts",
     readTime: "12 min read",
-    tags: ["Macarons", "French", "Ganache"]
+    tags: ["Macarons", "French", "Ganache"],
+    cuisine: "Italian",
+    mealType: "Dinner",
+    difficulty: "Advanced"
   },
   {
     id: 3,
@@ -127,7 +133,10 @@ const MOCK_POSTS = [
     author: "Alina",
     category: "Baking",
     readTime: "7 min read",
-    tags: ["Loaf Cake", "Blueberry", "Lemon"]
+    tags: ["Loaf Cake", "Blueberry", "Lemon"],
+    cuisine: "Italian",
+    mealType: "Dinner",
+    difficulty: "Intermediate"
   },
   {
     id: 4,
@@ -161,7 +170,10 @@ const MOCK_POSTS = [
     author: "Alina",
     category: "Beverages",
     readTime: "5 min read",
-    tags: ["Lemonade", "Raspberry", "Summer"]
+    tags: ["Lemonade", "Raspberry", "Summer"],
+    cuisine: "Italian",
+    mealType: "Dinner",
+    difficulty: "Easy"
   },
   {
     id: 5,
@@ -199,7 +211,10 @@ const MOCK_POSTS = [
     author: "Alina",
     category: "Desserts",
     readTime: "6 min read",
-    tags: ["Chocolate", "Lava Cake", "Desserts"]
+    tags: ["Chocolate", "Lava Cake", "Desserts"],
+    cuisine: "Italian",
+    mealType: "Dinner",
+    difficulty: "Intermediate"
   }
 ];
 
@@ -804,7 +819,7 @@ export async function getPosts(category = null, fetchAll = true) {
         const totalPagesHeader = res.headers.get('x-wp-totalpages');
         const totalPages = totalPagesHeader ? parseInt(totalPagesHeader, 10) : 1;
         
-        if (fetchAll && totalPages > 1 && posts.length === 100) {
+        if (fetchAll && totalPages > 1) {
           const maxPages = 15; // Sanity limit
           const remainingPages = [];
           for (let p = 2; p <= Math.min(totalPages, maxPages); p++) {
@@ -881,7 +896,7 @@ export async function getPosts(category = null, fetchAll = true) {
 
   // Return lightweight copies (without content/recipe) to keep network payload light
   let filtered = sorted;
-  if (category) {
+  if (category && category.toLowerCase() !== 'all') {
     filtered = sorted.filter(
       post => post.category.toLowerCase().trim() === category.toLowerCase().trim()
     );
@@ -1002,13 +1017,8 @@ export async function getCategories() {
       'Salad', 'Seafood', 'Soup'
     ];
     
-    // Exclude commercial and redundant tags to match the Culinary Elegance screenshot look
-    const filtered = decoded.filter(name => 
-      allowedCategories.some(ac => ac.toLowerCase().trim() === name.toLowerCase().trim())
-    );
-
     // Reorder categories: alphabetical order for organic alignment
-    return filtered.sort((a, b) => a.localeCompare(b));
+    return decoded.sort((a, b) => a.localeCompare(b));
   } catch (error) {
     console.error("Failed to fetch WordPress categories, using Mock Categories:", error);
     const categories = MOCK_POSTS.map(p => p.category);

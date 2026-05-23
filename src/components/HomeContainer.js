@@ -16,7 +16,7 @@ export default function HomeContainer({ initialPosts = [], categories = [] }) {
 
   // Sidebar Filter States (Screenshot 1 specs)
   const [selectedCuisines, setSelectedCuisines] = useState([]);
-  const [selectedMealType, setSelectedMealType] = useState('Dinner');
+  const [selectedMealType, setSelectedMealType] = useState('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
   
   const searchParams = useSearchParams();
@@ -72,10 +72,8 @@ export default function HomeContainer({ initialPosts = [], categories = [] }) {
   // Spotlight post is always the latest post (first element)
   const spotlightPost = initialPosts[0];
   
-  // Filter out the spotlight post from the grid if we are in "All" view to avoid duplicate layout
-  const gridPosts = filteredPosts.filter(post => 
-    activeCategory !== 'All' || post.id !== spotlightPost?.id
-  );
+  // Since there is no duplicate spotlight post layout, keep all posts in the grid
+  const gridPosts = filteredPosts;
 
   // Modern pagination slicing for client side rendering speed
   const slicedGridPosts = gridPosts.slice(0, visibleCount);
@@ -236,6 +234,16 @@ export default function HomeContainer({ initialPosts = [], categories = [] }) {
               {/* Meal Type Group */}
               <div className={styles.sidebarGroup}>
                 <h3 className={styles.sidebarTitle}>Meal Type</h3>
+                <label className={styles.checkboxLabel}>
+                  <input 
+                    type="radio" 
+                    name="mealType"
+                    className={styles.radioInput}
+                    checked={selectedMealType === 'All'}
+                    onChange={() => setSelectedMealType('All')}
+                  />
+                  <span>All</span>
+                </label>
                 <label className={styles.checkboxLabel}>
                   <input 
                     type="radio" 
