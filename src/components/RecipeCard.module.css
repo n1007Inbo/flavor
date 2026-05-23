@@ -1,0 +1,158 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #eae5e0;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 100%;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(21, 66, 18, 0.06);
+}
+
+.imgWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2; /* Perfectly horizontal aspect ratio matching mockups */
+  overflow: hidden;
+  background: #fbf9f8;
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover .image {
+  transform: scale(1.04);
+}
+
+/* Premium Floating Bookmark Button */
+.bookmarkBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555555;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+.bookmarkBtn:hover {
+  transform: scale(1.08);
+  color: var(--color-accent);
+}
+
+.bookmarkBtn.bookmarked {
+  color: var(--color-accent);
+}
+
+/* Elegant Curated Pill Badges inside the Image (Bottom-Left) */
+.pillBadge {
+  position: absolute;
+  bottom: 0.85rem;
+  left: 0.85rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Curated badge styles matching the chic color palettes in Stitch's designs */
+.badgeVEGAN {
+  background-color: #e2ede0;
+  color: #1a4f15;
+}
+
+.badgeLOWCARB {
+  background-color: #f7ecdb;
+  color: #92540c;
+}
+
+.badgePESCATARIAN {
+  background-color: #e5f1f7;
+  color: #10638b;
+}
+
+.badgeCOMFORT {
+  background-color: #f4eae7;
+  color: #993d25;
+}
+
+.badgeSWEETTREAT {
+  background-color: #f8eaf1;
+  color: #a41e6c;
+}
+
+.badgeQUICKMEAL {
+  background-color: #eaeaea;
+  color: #444444;
+}
+
+.content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: #121212;
+  line-height: 1.25;
+  margin-bottom: 0.85rem;
+  transition: color 0.3s ease;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card:hover .title {
+  color: var(--color-primary);
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: #777777;
+  font-weight: 500;
+}
+
+.metaItem span {
+  display: inline-flex;
+  align-items: center;
+}

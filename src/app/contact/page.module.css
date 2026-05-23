@@ -1,0 +1,145 @@
+.header {
+  padding: 6rem 0 4rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 4rem;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+
+.title em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: hsl(var(--color-primary));
+  font-weight: 400;
+}
+
+.intro {
+  font-size: 1.2rem;
+  color: hsl(var(--text-muted));
+  max-width: 750px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 4rem;
+  padding: 2rem 0 6rem;
+  align-items: flex-start;
+}
+
+.infoCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.infoCard {
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  background: #ffffff;
+  border: 1.5px solid rgba(229, 130, 130, 0.15);
+  box-shadow: 0 10px 30px rgba(229, 130, 130, 0.02);
+}
+
+.infoTitle {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: hsl(var(--color-primary));
+}
+
+.infoText {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: hsl(var(--text-muted));
+}
+
+.formCard {
+  border-radius: var(--radius-lg);
+  padding: 3.5rem;
+  background: #ffffff;
+  border: 1.5px solid rgba(229, 130, 130, 0.2);
+  box-shadow: 0 15px 50px rgba(229, 130, 130, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+.formCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(229, 130, 130, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.formGroup {
+  margin-bottom: 1.75rem;
+}
+
+.label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: hsl(var(--text-muted));
+  margin-bottom: 0.5rem;
+}
+
+.textArea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+.successPanel {
+  text-align: center;
+  padding: 4rem 0;
+  animation: scale-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.successIcon {
+  color: hsl(var(--color-primary));
+  margin-bottom: 1.5rem;
+}
+
+.successTitle {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.successText {
+  color: hsl(var(--text-muted));
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+@keyframes scale-up {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (max-width: 992px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.75rem;
+  }
+  .formCard {
+    padding: 2.5rem 1.5rem;
+  }
+}

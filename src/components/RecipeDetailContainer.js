@@ -1,0 +1,354 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import RecipeCard from '@/components/RecipeCard';
+import styles from './RecipeDetailContainer.module.css';
+
+// Helper function to format quantities into beautiful fractions
+function formatQuantity(qty) {
+  if (!qty || isNaN(qty)) return '';
+  const whole = Math.floor(qty);
+  const decimal = qty - whole;
+  
+  let frac = '';
+  if (Math.abs(decimal - 0.25) < 0.05) frac = '1/4';
+  else if (Math.abs(decimal - 0.5) < 0.05) frac = '1/2';
+  else if (Math.abs(decimal - 0.75) < 0.05) frac = '3/4';
+  else if (Math.abs(decimal - 0.33) < 0.05) frac = '1/3';
+  else if (Math.abs(decimal - 0.66) < 0.05) frac = '2/3';
+  else if (Math.abs(decimal - 0.125) < 0.03) frac = '1/8';
+  
+  if (whole === 0) {
+    return frac || qty.toFixed(1).replace('.0', '');
+  }
+  
+  if (frac) {
+    return `${whole} ${frac}`;
+  }
+  
+  return qty.toFixed(1).replace('.0', '');
+}
+
+export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
+  const { title, slug, excerpt, featuredImage, category, difficulty, prepTime, cookTime, calories, recipe } = post;
+
+  const baseServings = recipe?.servings || 4;
+  const [servings, setServings] = useState(baseServings);
+  const [checkedIngredients, setCheckedIngredients] = useState({});
+  const [doneSteps, setDoneSteps] = useState({});
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`bookmark-${slug}`);
+      if (saved === 'true') {
+        setIsBookmarked(true);
+      }
+    }
+  }, [slug]);
+
+  const toggleBookmark = () => {
+    const nextState = !isBookmarked;
+    setIsBookmarked(nextState);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`bookmark-${slug}`, String(nextState));
+    }
+  };
+
+  const scale = servings / baseServings;
+
+  const toggleIngredient = (index) => {
+    setCheckedIngredients(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  const toggleStep = (index) => {
+    setDoneSteps(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  const incrementServings = () => {
+    setServings(prev => Math.min(prev + 1, 24));
+  };
+
+  const decrementServings = () => {
+    setServings(prev => Math.max(prev - 1, 1));
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // Generate dynamic, meaningful title headers for instructions steps based on content keywords
+  const getStepHeader = (step, index) => {
+    let text = "";
+    if (typeof step === 'string') {
+      text = step;
+    } else if (step && typeof step === 'object') {
+      text = step.text || step.name || "";
+    }
+    
+    if (!text) return `STEP ${index + 1}`;
+    
+    const sLower = text.toLowerCase();
+    if (index === 0) return "SAUTE & START";
+    if (index === 1) return "TOAST THE BASE";
+    if (index === 2) return "DEGLAZE AND SIMMER";
+    if (index === 3) return "THE FINISHING TOUCH";
+    if (index === 4) return "SERVE AND GARNISH";
+    
+    // Fallback extraction of first 3 words in uppercase
+    const words = text.split(' ').slice(0, 3).join(' ').toUpperCase().replace(/[^A-Z\s]/g, '');
+    return words || `STEP ${index + 1}`;
+  };
+
+  const ingredientList = recipe?.ingredients || [
+    { qty: 2, unit: "cups", name: "Arborio Rice" },
+    { qty: 500, unit: "g", name: "Mixed wild mushrooms (Porcini, Cremini)" },
+    { qty: 6, unit: "cups", name: "Warm vegetable broth" },
+    { qty: 0.5, unit: "cup", name: "Dry white wine" },
+    { qty: 2, unit: "tbsp", name: "High-quality truffle oil" },
+    { qty: 2, unit: "cloves", name: "Garlic, finely minced" }
+  ];
+
+  const instructionSteps = recipe?.instructions || [
+    "SAUTE THE MUSHROOMS: In a large wide-bottomed pan, heat 1 tablespoon of olive oil over medium-high heat. Add the sliced mushrooms and sauté until they release their moisture and turn golden brown. Remove half of the mushrooms and set aside for topping.",
+    "TOAST THE RICE: Add the Arborio rice to the pan. Stir constantly for 2-3 minutes, ensuring every grain is coated in the oils and the edges of the rice become slightly translucent. This 'toasting' step is crucial for the final texture.",
+    "DEGLAZE AND SIMMER: Pour in the white wine and stir until the liquid has been fully absorbed by the rice. Begin adding the warm vegetable broth, one ladle at a time. Wait until each ladle is almost completely absorbed before adding the next.",
+    "THE FINISHING TOUCH: Continue adding broth until the rice is tender but still has a slight 'al dente' bite (usually about 20-25 minutes). Remove from heat. Stir in the Parmesan cheese, butter, and truffle oil. Cover and let sit for 2 minutes to rest.",
+    "SERVE AND GARNISH: Divide into warm bowls. Top with the reserved golden mushrooms, freshly shaved black truffle, and a sprinkle of parsley. Serve immediately while the texture is peak creaminess."
+  ];
+
+  return (
+    <div className={styles.container}>
+      {/* Top Split Layout (Screenshot 4) */}
+      <div className={styles.topSplit}>
+        {/* Left Column: Big Image & Thumbnail Gallery */}
+        <div className={styles.imageCol}>
+          <div className={styles.badgeOverlay}>
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>star</span>
+            <span>Chef's Choice</span>
+          </div>
+          
+          <div className={styles.mainImageWrapper}>
+            <Image 
+              src={featuredImage} 
+              alt={title}
+              fill
+              className={styles.mainImage}
+              priority
+            />
+          </div>
+
+          {/* Premium mockup gallery row underneath main image */}
+          <div className={styles.galleryRow}>
+            <div className={styles.galleryItem}>
+              <Image src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=150&q=80" alt="Process 1" fill />
+            </div>
+            <div className={styles.galleryItem}>
+              <Image src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=150&q=80" alt="Process 2" fill />
+            </div>
+            <div className={styles.galleryItem}>
+              <Image src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=150&q=80" alt="Process 3" fill />
+            </div>
+            <div className={`${styles.galleryItem} ${styles.galleryMore}`}>
+              <span>+12 More</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Editorial Title & Details */}
+        <div className={styles.infoCol}>
+          <div className={styles.editorialCategory}>{category}</div>
+          <h1 className={styles.editorialTitle}>{title}</h1>
+          <p className={styles.editorialExcerpt}>{excerpt || "A carefully crafted, flavor-harmonic masterpiece perfect for home cooking enthusiasts seeking elegant dining experiences."}</p>
+
+          {/* Dynamic HSL Highlight Metadata Grid */}
+          <div className={styles.metadataGrid}>
+            <div className={styles.metaBox}>
+              <span className="material-symbols-outlined">schedule</span>
+              <div className={styles.metaBoxContent}>
+                <span className={styles.metaLabel}>PREP TIME</span>
+                <span className={styles.metaValue}>{prepTime || "15 Mins"}</span>
+              </div>
+            </div>
+            <div className={styles.metaBox}>
+              <span className="material-symbols-outlined">schedule</span>
+              <div className={styles.metaBoxContent}>
+                <span className={styles.metaLabel}>COOK TIME</span>
+                <span className={styles.metaValue}>{cookTime || "35 Mins"}</span>
+              </div>
+            </div>
+            <div className={styles.metaBox}>
+              <span className="material-symbols-outlined">restaurant</span>
+              <div className={styles.metaBoxContent}>
+                <span className={styles.metaLabel}>SERVINGS</span>
+                <span className={styles.metaValue}>{servings} People</span>
+              </div>
+            </div>
+            <div className={styles.metaBox}>
+              <span className="material-symbols-outlined">bolt</span>
+              <div className={styles.metaBoxContent}>
+                <span className={styles.metaLabel}>CALORIES</span>
+                <span className={styles.metaValue}>{calories || "420 kcal"}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Servings Adjustment Buttons */}
+          <div className={styles.servingsScaler}>
+            <span className={styles.scaleLabel}>Adjust Recipe Yield:</span>
+            <div className={styles.scaleControls}>
+              <button onClick={decrementServings} className={styles.scaleBtn} disabled={servings <= 1}>-</button>
+              <span className={styles.servingsCount}>{servings}</span>
+              <button onClick={incrementServings} className={styles.scaleBtn}>+</button>
+            </div>
+          </div>
+
+          {/* Terracotta solid and Outline Buttons */}
+          <div className={styles.actionButtons}>
+            <button 
+              onClick={toggleBookmark}
+              className={`${styles.saveButton} ${isBookmarked ? styles.saved : ''}`}
+            >
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: isBookmarked ? '"FILL" 1' : '"FILL" 0' }}>
+                bookmark
+              </span>
+              <span>{isBookmarked ? 'Saved to Cookbook' : 'Save to Cookbook'}</span>
+            </button>
+            
+            <button onClick={handlePrint} className={styles.printButton}>
+              <span className="material-symbols-outlined">print</span>
+              <span>Print Recipe</span>
+            </button>
+          </div>
+
+          {/* Organic Diet Pills */}
+          <div className={styles.dietTags}>
+            <span className={styles.dietPill}>Vegetarian</span>
+            <span className={styles.dietPill}>Gluten-Free</span>
+            <span className={styles.dietPill}>Organic Premium</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Split Layout: Checklist Ingredients & Circle Instructions (Screenshot 4) */}
+      <div className={styles.bottomSplit}>
+        {/* Left Column (40% width): Ingredients Checklist */}
+        <div className={styles.ingredientsCol}>
+          <h2 className={styles.sectionTitle}>Ingredients</h2>
+          <ul className={styles.ingredientsList}>
+            {ingredientList.map((item, index) => {
+              if (!item) return null;
+              const isChecked = !!checkedIngredients[index];
+              
+              let qty = null;
+              let unit = "";
+              let name = "";
+              
+              if (typeof item === 'string') {
+                name = item;
+              } else if (item && typeof item === 'object') {
+                qty = item.qty || null;
+                unit = item.unit || "";
+                name = item.name || "";
+              }
+              
+              const scaledQty = qty ? qty * scale : null;
+              
+              return (
+                <li 
+                  key={index} 
+                  className={`${styles.ingredientItem} ${isChecked ? styles.checked : ''}`}
+                  onClick={() => toggleIngredient(index)}
+                >
+                  <div className={styles.checkbox}>
+                    {isChecked && (
+                      <span className="material-symbols-outlined" style={{ fontSize: '14px', fontWeight: 'bold' }}>
+                        check
+                      </span>
+                    )}
+                  </div>
+                  <span className={styles.ingredientText}>
+                    {scaledQty && <span className={styles.qty}>{formatQuantity(scaledQty)} </span>}
+                    {unit && <span className={styles.unit}>{unit} </span>}
+                    <span>{name}</span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Pro Tip Callout Card */}
+          <div className={styles.proTipCard}>
+            <div className={styles.proTipTitle}>PRO TIP</div>
+            <p className={styles.proTipText}>
+              "Keep your broth at a low simmer in a separate pot. Adding cold broth will slow down the cooking process and affect the creaminess."
+            </p>
+          </div>
+        </div>
+
+        {/* Right Column (60% width): Circle Instructions */}
+        <div className={styles.instructionsCol}>
+          <h2 className={styles.sectionTitle}>Instructions</h2>
+          <ol className={styles.instructionsList}>
+            {instructionSteps.map((step, index) => {
+              const isDone = !!doneSteps[index];
+              const stepTitle = getStepHeader(step, index);
+              
+              let stepText = "";
+              if (typeof step === 'string') {
+                stepText = step;
+              } else if (step && typeof step === 'object') {
+                stepText = step.text || step.name || "";
+              }
+              
+              // Strip out existing headers (e.g. "SAUTE THE MUSHROOMS:") from step description if present
+              const cleanStepText = typeof stepText === 'string' ? stepText.replace(/^([A-Z\s]{4,30})[:\-\.]/i, '').trim() : '';
+
+              return (
+                <li 
+                  key={index} 
+                  className={`${styles.instructionItem} ${isDone ? styles.stepDone : ''}`}
+                  onClick={() => toggleStep(index)}
+                >
+                  <div className={styles.stepCircle}>
+                    {isDone ? (
+                      <span className="material-symbols-outlined" style={{ fontSize: '16px', fontWeight: 'bold', color: '#ffffff' }}>
+                        check
+                      </span>
+                    ) : (
+                      index + 1
+                    )}
+                  </div>
+                  <div className={styles.stepContent}>
+                    <h3 className={styles.stepTitle}>{stepTitle}</h3>
+                    <p className={styles.stepDescription}>{cleanStepText}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </div>
+
+      {/* You May Also Like Section (Stitch Grid) */}
+      {relatedPosts.length > 0 && (
+        <div className={styles.relatedSection}>
+          <h2 className={styles.relatedTitle}>You May Also Like</h2>
+          <div className={styles.relatedGrid}>
+            {relatedPosts.map((rPost) => (
+              <RecipeCard key={rPost.id} post={rPost} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
