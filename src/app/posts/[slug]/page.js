@@ -46,7 +46,7 @@ export default async function Post({ params }) {
   }
 
   // Fetch related posts from dynamic listings safey
-  const allPosts = await getPosts();
+  const allPosts = await getPosts(null, false);
   const relatedPosts = allPosts
     .filter((p) => p.slug !== post.slug)
     .slice(0, 3);

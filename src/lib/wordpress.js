@@ -782,49 +782,68 @@ export async function getPosts(category = null, fetchAll = true) {
     }
   }
 
-  // Fetch standard posts page-by-page safely from the WP API directly (if category is present, filter by ID)
-  let page = 1;
-  let hasMore = true;
-  const maxPages = fetchAll ? 15 : 1; // Limit to 1 page if we don't need all posts (e.g. generateStaticParams)
-
-  while (hasMore && page <= maxPages) {
-    try {
-      let postsUrl = `${WP_API_URL}/wp-json/wp/v2/posts?_embed&per_page=100&page=${page}`;
-      if (categoryId) {
-        postsUrl = `${WP_API_URL}/wp-json/wp/v2/posts?_embed&categories=${categoryId}&per_page=100&page=${page}`;
-      }
-      
-      const res = await fetch(postsUrl, { 
-        headers: getAuthHeaders(),
-        next: { revalidate: 60 } // Near-instant dynamic caching revalidation (60 seconds)
-      });
-      
-      if (res.ok) {
-        const posts = await res.json();
-        if (!posts || posts.length === 0) {
-          hasMore = false;
-        } else {
-          const parsed = posts.map(post => {
-            return parsePost(post, categoryMap);
-          }).filter(p => p !== null);
-          
-          allPosts = [...allPosts, ...parsed];
-          
-          // If we received fewer than 100 posts, we have reached the end of the database
-          if (posts.length < 100) {
-            hasMore = false;
-          } else {
-            page++;
-          }
-        }
-      } else {
-        // If the request fails (e.g. 400 for page out of bounds), stop fetching
-        hasMore = false;
-      }
-    } catch (e) {
-      console.error(`Non-blocking failure: Standard posts fetching failed on page ${page}.`, e);
-      hasMore = false;
+  // Fetch page 1 first to get total page counts and initial posts
+  try {
+    let postsUrl = `${WP_API_URL}/wp-json/wp/v2/posts?_embed&per_page=100&page=1`;
+    if (categoryId) {
+      postsUrl = `${WP_API_URL}/wp-json/wp/v2/posts?_embed&categories=${categoryId}&per_page=100&page=1`;
     }
+    
+    const res = await fetch(postsUrl, { 
+      headers: getAuthHeaders(),
+      next: { revalidate: 60 } // Near-instant dynamic caching revalidation (60 seconds)
+    });
+
+    if (res.ok) {
+      const posts = await res.json();
+      if (posts && Array.isArray(posts) && posts.length > 0) {
+        const parsed = posts.map(post => parsePost(post, categoryMap)).filter(p => p !== null);
+        allPosts = [...allPosts, ...parsed];
+        
+        // Dynamic parallel fetching for the remaining pages
+        const totalPagesHeader = res.headers.get('x-wp-totalpages');
+        const totalPages = totalPagesHeader ? parseInt(totalPagesHeader, 10) : 1;
+        
+        if (fetchAll && totalPages > 1 && posts.length === 100) {
+          const maxPages = 15; // Sanity limit
+          const remainingPages = [];
+          for (let p = 2; p <= Math.min(totalPages, maxPages); p++) {
+            remainingPages.push(p);
+          }
+          
+          console.log(`[WordPress Parallel Fetch] Fetching remaining pages in parallel: ${remainingPages.join(', ')}`);
+          
+          const promises = remainingPages.map(async (pageIndex) => {
+            try {
+              let pageUrl = `${WP_API_URL}/wp-json/wp/v2/posts?_embed&per_page=100&page=${pageIndex}`;
+              if (categoryId) {
+                pageUrl = `${WP_API_URL}/wp-json/wp/v2/posts?_embed&categories=${categoryId}&per_page=100&page=${pageIndex}`;
+              }
+              const pageRes = await fetch(pageUrl, {
+                headers: getAuthHeaders(),
+                next: { revalidate: 60 }
+              });
+              if (pageRes.ok) {
+                const pagePosts = await pageRes.json();
+                if (pagePosts && Array.isArray(pagePosts)) {
+                  return pagePosts.map(post => parsePost(post, categoryMap)).filter(p => p !== null);
+                }
+              }
+            } catch (err) {
+              console.error(`[WordPress Parallel Fetch] Non-blocking failure on page ${pageIndex}:`, err);
+            }
+            return [];
+          });
+          
+          const parallelResults = await Promise.all(promises);
+          parallelResults.forEach(parsedPage => {
+            allPosts = [...allPosts, ...parsedPage];
+          });
+        }
+      }
+    }
+  } catch (e) {
+    console.error(`Non-blocking failure: Standard posts fetching failed.`, e);
   }
 
   // If dynamic pools returned empty, fall back to high-quality local mock data so the site is never blank!
