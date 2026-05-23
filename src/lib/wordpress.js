@@ -2,6 +2,9 @@
 
 const WP_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || '';
 
+// Server-side global full posts cache for 0ms instant detail page rendering
+let globalFullPostsCache = [];
+
 // High-quality mockup baking data showcasing the sweet "FlavorZing" brand with 5 posts (as fallback)
 const MOCK_POSTS = [
   {
@@ -739,6 +742,24 @@ export async function getPosts(category = null, fetchAll = true) {
     return MOCK_POSTS;
   }
 
+  // 1. If we already have the global full posts cache populated in memory, serve instantly!
+  if (globalFullPostsCache.length > 0) {
+    console.log(`[Cache Hit] Serving ${globalFullPostsCache.length} lightweight posts from server-side memory cache.`);
+    let filtered = globalFullPostsCache;
+    if (category) {
+      filtered = globalFullPostsCache.filter(
+        post => post.category.toLowerCase().trim() === category.toLowerCase().trim()
+      );
+    }
+    // Return lightweight copy (without content/recipe) to save client network size
+    return filtered.map(post => {
+      const copy = { ...post };
+      delete copy.content;
+      delete copy.recipe;
+      return copy;
+    });
+  }
+
   // Define failure-resistant variables
   let allPosts = [];
   let categoryMap = {};
@@ -784,14 +805,7 @@ export async function getPosts(category = null, fetchAll = true) {
           hasMore = false;
         } else {
           const parsed = posts.map(post => {
-            const parsedPost = parsePost(post, categoryMap);
-            if (parsedPost) {
-              // OPTIMIZATION: Remove massive content HTML and recipe blocks from standard listings.
-              // This keeps the JSON payload extremely small (~150KB) and ensures 1ms homepage rendering!
-              delete parsedPost.content;
-              delete parsedPost.recipe;
-            }
-            return parsedPost;
+            return parsePost(post, categoryMap);
           }).filter(p => p !== null);
           
           allPosts = [...allPosts, ...parsed];
@@ -843,10 +857,34 @@ export async function getPosts(category = null, fetchAll = true) {
     return new Date(b.date) - new Date(a.date);
   });
 
-  return sorted;
+  // Populate global full posts cache with the complete parsed posts (retaining content and recipe)
+  globalFullPostsCache = sorted;
+
+  // Return lightweight copies (without content/recipe) to keep network payload light
+  let filtered = sorted;
+  if (category) {
+    filtered = sorted.filter(
+      post => post.category.toLowerCase().trim() === category.toLowerCase().trim()
+    );
+  }
+  return filtered.map(post => {
+    const copy = { ...post };
+    delete copy.content;
+    delete copy.recipe;
+    return copy;
+  });
 }
 
 export async function getPostBySlug(slug) {
+  // 1. Serve immediately from hot memory cache (0ms instant page loads!)
+  if (globalFullPostsCache.length > 0) {
+    const cachedPost = globalFullPostsCache.find(p => p.slug === slug);
+    if (cachedPost) {
+      console.log(`[Cache Hit] Instantly returning cached full post details for slug: ${slug}`);
+      return cachedPost;
+    }
+  }
+
   if (!WP_API_URL) {
     const post = MOCK_POSTS.find(p => p.slug === slug);
     return post || null;
@@ -857,7 +895,7 @@ export async function getPostBySlug(slug) {
     categoryMap = await getCategoryMap();
   } catch (e) {}
 
-  // Fetch standard post CPT by slug
+  // Fetch standard post CPT by slug (safe fallback)
   try {
     const postsUrl = `${WP_API_URL}/wp-json/wp/v2/posts?_embed&slug=${slug}`;
     const res = await fetch(postsUrl, { 
