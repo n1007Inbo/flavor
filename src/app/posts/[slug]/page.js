@@ -17,15 +17,15 @@ export async function generateMetadata({ params }) {
   
   if (!post) {
     return {
-      title: 'Recipe Not Found | Culinary Elegance',
+      title: 'Recipe Not Found | FlavorZing',
     };
   }
 
   return {
-    title: `${post.title} | Culinary Elegance`,
+    title: `${post.title} | FlavorZing`,
     description: post.excerpt,
     openGraph: {
-      title: `${post.title} | Culinary Elegance`,
+      title: `${post.title} | FlavorZing`,
       description: post.excerpt,
       images: [{ url: post.featuredImage }],
     },

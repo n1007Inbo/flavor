@@ -50,9 +50,9 @@ export default function Navbar({ categories = [] }) {
     <>
       <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
         <div className={`container ${styles.navContainer}`}>
-          {/* Branded Culinary Elegance Logo */}
+          {/* Branded FlavorZing Logo */}
           <Link href="/" className={styles.logo} onClick={closeAllMenus}>
-            Culinary <span className={styles.logoSpan}>Elegance</span>
+            Flavor<span className={styles.logoSpan}>Zing</span>
           </Link>
 
           <button 

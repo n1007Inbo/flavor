@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import RecipeCard from '@/components/RecipeCard';
+import PostContent from '@/components/PostContent';
 import styles from './RecipeDetailContainer.module.css';
 
 // Helper function to format quantities into beautiful fractions
@@ -32,7 +33,7 @@ function formatQuantity(qty) {
 }
 
 export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
-  const { title, slug, excerpt, featuredImage, category, difficulty, prepTime, cookTime, calories, recipe } = post;
+  const { title, slug, excerpt, featuredImage, category, difficulty, prepTime, cookTime, calories, recipe, content } = post;
 
   const baseServings = recipe?.servings || 4;
   const [servings, setServings] = useState(baseServings);
@@ -237,6 +238,13 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
           </div>
         </div>
       </div>
+
+      {/* Dynamic Editorial Content HTML from WordPress (Paragraphs & Images) */}
+      {content && (
+        <div className={styles.blogContentRow}>
+          <PostContent content={content} />
+        </div>
+      )}
 
       {/* Bottom Split Layout: Checklist Ingredients & Circle Instructions (Screenshot 4) */}
       <div className={styles.bottomSplit}>

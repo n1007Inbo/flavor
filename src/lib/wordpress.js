@@ -232,15 +232,15 @@ function parseRecipeData(rawRecipe) {
         group.ingredients.forEach(ing => {
           parsedIngredients.push({
             qty: ing.amount ? parseFloat(ing.amount) || null : null,
-            unit: ing.unit || '',
-            name: ing.name || ''
+            unit: (ing.unit || '').replace(/[\*#]/g, ''),
+            name: (ing.name || '').replace(/[\*#]/g, '')
           });
         });
       } else if (group) {
         parsedIngredients.push({
           qty: group.amount ? parseFloat(group.amount) || null : null,
-          unit: group.unit || '',
-          name: group.name || ''
+          unit: (group.unit || '').replace(/[\*#]/g, ''),
+          name: (group.name || '').replace(/[\*#]/g, '')
         });
       }
     });
@@ -252,11 +252,11 @@ function parseRecipeData(rawRecipe) {
       if (group && Array.isArray(group.instructions)) {
         group.instructions.forEach(step => {
           if (step && step.text) {
-            parsedInstructions.push(step.text);
+            parsedInstructions.push(step.text.replace(/[\*#]/g, ''));
           }
         });
       } else if (group && group.text) {
-        parsedInstructions.push(group.text);
+        parsedInstructions.push(group.text.replace(/[\*#]/g, ''));
       }
     });
   }
@@ -704,9 +704,9 @@ function parsePost(post, categoryMap = {}) {
 
     return {
       id: post.id,
-      title: decodeHtmlEntities(post.title?.rendered || post.title || "Untitled Post"),
+      title: decodeHtmlEntities(post.title?.rendered || post.title || "Untitled Post").replace(/[\*#]/g, ''),
       slug: post.slug,
-      excerpt: decodeHtmlEntities(post.excerpt?.rendered?.replace(/<[^>]*>/g, '') || post.excerpt || ""),
+      excerpt: decodeHtmlEntities(post.excerpt?.rendered?.replace(/<[^>]*>/g, '') || post.excerpt || "").replace(/[\*#]/g, ''),
       content: contentHtml,
       featuredImage: featuredImage,
       date: formattedDate,

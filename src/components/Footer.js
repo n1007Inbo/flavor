@@ -11,7 +11,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className={styles.brandCol}>
             <div className={styles.logo}>
-              Culinary <span className={styles.logoSpan}>Elegance</span>
+              Flavor<span className={styles.logoSpan}>Zing</span>
             </div>
             <p className={styles.tagline}>
               Exploring the science, culture, and sensory artistry of gastronomy. Connecting flavors, unlocking hidden sensory profiles, and crafting modern culinary journeys.
@@ -69,7 +69,7 @@ export default function Footer() {
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                   <polyline points="22,6 12,13 2,6"></polyline>
                 </svg>
-                <span>hello@culinaryelegance.com</span>
+                <span>hello@flavorzing.com</span>
               </div>
             </div>
           </div>
@@ -79,7 +79,7 @@ export default function Footer() {
 
         <div className={styles.bottomRow}>
           <div className={styles.copyright}>
-            &copy; {currentYear} Culinary Elegance. All rights reserved. Powered by Next.js & Headless WordPress.
+            &copy; {currentYear} FlavorZing. All rights reserved. Powered by Next.js & Headless WordPress.
           </div>
           <div className={styles.crafted}>
             Crafted for Culinary Adventurers

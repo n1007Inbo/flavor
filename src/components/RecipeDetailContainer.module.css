@@ -579,3 +579,10 @@
     margin-bottom: 2.5rem;
   }
 }
+
+.blogContentRow {
+  margin: 3.5rem 0;
+  padding: 2.5rem 0 1rem;
+  border-top: 1px solid #eae5e0;
+  border-bottom: 1px solid #eae5e0;
+}
