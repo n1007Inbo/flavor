@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
 import styles from './RecipeCard.module.css';
 
 export default function RecipeCard({ post }) {
   const { title, slug, featuredImage, category, difficulty, prepTime, cookTime } = post;
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -56,19 +57,25 @@ export default function RecipeCard({ post }) {
   // Clean time string (e.g. "25 mins" -> "25 mins")
   const displayTime = prepTime || cookTime || "20 mins";
 
+  const handleCardClick = (e) => {
+    // Prevent routing if the click is on the bookmark button or inside it
+    if (e.target.closest(`.${styles.bookmarkBtn}`)) {
+      return;
+    }
+    router.push(`/posts/${slug}`);
+  };
+
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={handleCardClick} style={{ cursor: 'pointer' }}>
       <div className={styles.imgWrapper}>
-        <Link href={`/posts/${slug}`}>
-          <Image 
-            src={featuredImage} 
-            alt={title}
-            fill
-            className={styles.image}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={false}
-          />
-        </Link>
+        <Image 
+          src={featuredImage} 
+          alt={title}
+          fill
+          className={styles.image}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority={false}
+        />
         
         {/* Floating circular bookmark button in the top-right corner */}
         <button 
@@ -88,9 +95,7 @@ export default function RecipeCard({ post }) {
       </div>
 
       <div className={styles.content}>
-        <Link href={`/posts/${slug}`}>
-          <h3 className={styles.title}>{title}</h3>
-        </Link>
+        <h3 className={styles.title}>{title}</h3>
         
         {/* Subtle, beautiful metadata line (Time and Difficulty) */}
         <div className={styles.metaRow}>
