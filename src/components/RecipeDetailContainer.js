@@ -41,10 +41,12 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
   const [doneSteps, setDoneSteps] = useState({});
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [images, setImages] = useState([featuredImage]);
-  const [activeImage, setActiveImage] = useState(featuredImage);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   useEffect(() => {
-    setActiveImage(featuredImage);
+    setCurrentIndex(0);
   }, [featuredImage]);
 
   useEffect(() => {
@@ -81,6 +83,60 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
     setIsBookmarked(nextState);
     if (typeof window !== 'undefined') {
       localStorage.setItem(`bookmark-${slug}`, String(nextState));
+      if (nextState) {
+        localStorage.setItem(`bookmark-details-${slug}`, JSON.stringify({
+          title,
+          slug,
+          featuredImage,
+          category: category || "Recipes"
+        }));
+      } else {
+        localStorage.removeItem(`bookmark-details-${slug}`);
+      }
+      // Trigger a custom event to notify the Navbar to refresh its drawer list!
+      window.dispatchEvent(new Event('bookmarks-updated'));
+    }
+  };
+
+  // Swipable Swipe Gestures for Multi-Image Posts
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe && images.length > 1) {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    } else if (isRightSwipe && images.length > 1) {
+      setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  };
+
+  // Remove broken images on the fly and fallback to Unsplash food photo if necessary
+  const handleImageError = (failedUrl) => {
+    console.warn("Failed to load image, removing/falling back:", failedUrl);
+    if (images.length > 1) {
+      setImages(prev => {
+        const filtered = prev.filter(img => img !== failedUrl);
+        if (currentIndex >= filtered.length) {
+          setCurrentIndex(Math.max(0, filtered.length - 1));
+        }
+        return filtered.length > 0 ? filtered : ["https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80"];
+      });
+    } else {
+      setImages(["https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80"]);
+      setCurrentIndex(0);
     }
   };
 
@@ -201,14 +257,49 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
             <span>Chef's Choice</span>
           </div>
           
-          <div className={styles.mainImageWrapper}>
+          <div 
+            className={styles.mainImageWrapper}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
             <Image 
-              src={activeImage} 
+              src={images[currentIndex] || "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80"} 
               alt={title}
               fill
               className={styles.mainImage}
               priority
+              onError={() => handleImageError(images[currentIndex])}
             />
+            {images.length > 1 && (
+              <>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev - 1 + images.length) % images.length); }}
+                  className={`${styles.sliderArrow} ${styles.prevArrow}`}
+                  aria-label="Previous image"
+                >
+                  <span className="material-symbols-outlined">chevron_left</span>
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev + 1) % images.length); }}
+                  className={`${styles.sliderArrow} ${styles.nextArrow}`}
+                  aria-label="Next image"
+                >
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </button>
+                
+                {/* Dots indicator */}
+                <div className={styles.sliderDots}>
+                  {images.map((_, i) => (
+                    <span 
+                      key={i} 
+                      className={`${styles.sliderDot} ${i === currentIndex ? styles.sliderDotActive : ''}`}
+                      onClick={(e) => { e.stopPropagation(); setCurrentIndex(i); }}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Premium parsed thumbnail gallery row - only displays when extra images exist */}
@@ -221,10 +312,15 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
                 return (
                   <div 
                     key={idx} 
-                    className={`${styles.galleryItem} ${activeImage === imgUrl ? styles.galleryActive : ''}`}
-                    onClick={() => setActiveImage(imgUrl)}
+                    className={`${styles.galleryItem} ${currentIndex === idx ? styles.galleryActive : ''}`}
+                    onClick={() => setCurrentIndex(idx)}
                   >
-                    <Image src={imgUrl} alt={`Process ${idx + 1}`} fill />
+                    <Image 
+                      src={imgUrl} 
+                      alt={`Process ${idx + 1}`} 
+                      fill 
+                      onError={() => handleImageError(imgUrl)}
+                    />
                     {isMore && (
                       <div className={styles.galleryMoreOverlay}>
                         <span>+{remainingCount} more</span>

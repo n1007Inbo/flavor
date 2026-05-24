@@ -29,7 +29,7 @@ export default function Footer() {
                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                 </svg>
               </a>
-              <a href="#" className={styles.socialIcon} aria-label="Pinterest">
+              <a href="https://www.pinterest.com/alina112211/_created/" className={styles.socialIcon} aria-label="Pinterest" target="_blank" rel="noopener noreferrer">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M8 22c-.5-1.5-.2-2.8.2-4.1C8.7 16.6 9 14.5 9 14.5s-.6-1.2-.6-3c0-2.8 1.6-4.9 3.6-4.9 1.7 0 2.5 1.3 2.5 2.8 0 1.7-1.1 4.3-1.6 6.7-.5 2 1 3.6 3 3.6 3.6 0 6.4-3.8 6.4-9.3 0-4.8-3.5-8.2-8.4-8.2-5.7 0-9.1 4.3-9.1 8.8 0 1.7.7 3.6 1.5 4.6.2.2.2.4.1.7-.1.6-.4 1.7-.5 1.9-.1.3-.3.4-.6.3-2.1-1-3.4-4-3.4-6.5C1 6 5 1 12.5 1 18.5 1 23 5.3 23 11c0 6-3.8 10.8-9 10.8-1.8 0-3.4-.9-4-2.1 0 0-.9 3.4-1.1 4.2-.4 1.5-1.5 3.4-2.2 4.6z"></path>
                 </svg>

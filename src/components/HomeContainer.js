@@ -123,7 +123,7 @@ export default function HomeContainer({ initialPosts = [], categories = [] }) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <span className="material-symbols-outlined heroSearchIcon">search</span>
+            <span className={`material-symbols-outlined ${styles.heroSearchIcon}`}>search</span>
           </div>
         </div>
       </section>

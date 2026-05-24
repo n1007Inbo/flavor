@@ -8,7 +8,12 @@ import styles from './RecipeCard.module.css';
 export default function RecipeCard({ post }) {
   const { title, slug, featuredImage, category, difficulty, prepTime, cookTime } = post;
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [imgSrc, setImgSrc] = useState(featuredImage);
   const router = useRouter();
+
+  useEffect(() => {
+    setImgSrc(featuredImage);
+  }, [featuredImage]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -26,13 +31,25 @@ export default function RecipeCard({ post }) {
     setIsBookmarked(nextState);
     if (typeof window !== 'undefined') {
       localStorage.setItem(`bookmark-${slug}`, String(nextState));
+      if (nextState) {
+        localStorage.setItem(`bookmark-details-${slug}`, JSON.stringify({
+          title,
+          slug,
+          featuredImage,
+          category: category || "Recipes"
+        }));
+      } else {
+        localStorage.removeItem(`bookmark-details-${slug}`);
+      }
+      // Trigger a custom event to notify the Navbar to refresh its drawer list!
+      window.dispatchEvent(new Event('bookmarks-updated'));
     }
   };
 
   // Determine stunning curated badge based on post keywords
   const getPillBadge = () => {
     const tLower = title.toLowerCase();
-    const cLower = category.toLowerCase();
+    const cLower = category ? category.toLowerCase() : '';
     
     if (tLower.includes('vegan') || tLower.includes('quinoa') || tLower.includes('basil') || tLower.includes('pistachio') || tLower.includes('greens') || tLower.includes('salad')) {
       return 'VEGAN';
@@ -54,11 +71,10 @@ export default function RecipeCard({ post }) {
 
   const badge = getPillBadge();
 
-  // Clean time string (e.g. "25 mins" -> "25 mins")
-  const displayTime = prepTime || cookTime || "20 mins";
+  // Clean time string
+  const displayTime = prepTime || cookTime || "20 Mins";
 
   const handleCardClick = (e) => {
-    // Prevent routing if the click is on the bookmark button or inside it
     if (e.target.closest(`.${styles.bookmarkBtn}`)) {
       return;
     }
@@ -69,12 +85,15 @@ export default function RecipeCard({ post }) {
     <div className={styles.card} onClick={handleCardClick} style={{ cursor: 'pointer' }}>
       <div className={styles.imgWrapper}>
         <Image 
-          src={featuredImage} 
+          src={imgSrc || "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80"} 
           alt={title}
           fill
           className={styles.image}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority={false}
+          onError={() => {
+            setImgSrc("https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80");
+          }}
         />
         
         {/* Floating circular bookmark button in the top-right corner */}

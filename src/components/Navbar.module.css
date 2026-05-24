@@ -252,3 +252,201 @@
 .actionIcon:hover {
   color: hsl(var(--color-primary));
 }
+
+/* Saves Drawer styling */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  max-width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08);
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-left: 1px solid rgba(54, 84, 59, 0.08);
+}
+
+.drawerOpen {
+  transform: translateX(0);
+}
+
+.drawerBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(44, 37, 34, 0.3);
+  backdrop-filter: blur(8px);
+  z-index: 1199;
+  transition: opacity 0.3s ease;
+}
+
+.drawerHeader {
+  padding: 1.5rem 2rem;
+  border-bottom: 1.5px solid rgba(54, 84, 59, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawerHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.drawerHeaderTitle h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(var(--text-primary));
+  margin: 0;
+}
+
+.drawerClose {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: hsl(var(--text-muted));
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.drawerClose:hover {
+  color: hsl(var(--color-primary));
+  transform: rotate(90deg);
+}
+
+.drawerBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.drawerList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.drawerItem {
+  display: flex;
+  gap: 1rem;
+  text-decoration: none;
+  background: rgba(54, 84, 59, 0.02);
+  border: 1px solid rgba(54, 84, 59, 0.05);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawerItem:hover {
+  background: #ffffff;
+  border-color: rgba(54, 84, 59, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(54, 84, 59, 0.05);
+}
+
+.drawerItemImg {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.drawerItemInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.drawerItemCategory {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: hsl(var(--color-primary));
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.drawerItemTitle {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: hsl(var(--text-primary));
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drawerEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: hsl(var(--text-muted));
+  padding: 0 1rem;
+}
+
+.drawerEmpty h4 {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--text-primary));
+  margin: 0 0 0.5rem 0;
+}
+
+.drawerEmpty p {
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Badge for bookmark action badge */
+.actionBadge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: hsl(var(--color-primary));
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 1.5px solid #ffffff;
+}
+
+.actionIcon {
+  position: relative;
+}
+
+.navLinkBtn {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}

@@ -265,6 +265,7 @@
   justify-content: center;
   gap: 8px;
   cursor: pointer;
+  white-space: nowrap;
   transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 15px rgba(158, 66, 30, 0.2);
 }
@@ -296,6 +297,7 @@
   justify-content: center;
   gap: 8px;
   cursor: pointer;
+  white-space: nowrap;
   transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 15px rgba(21, 66, 18, 0.2);
 }
@@ -322,6 +324,7 @@
   justify-content: center;
   gap: 8px;
   cursor: pointer;
+  white-space: nowrap;
   transition: transform 0.2s ease, background-color 0.3s ease;
 }
 
@@ -800,4 +803,79 @@
   padding: 2.5rem 0 1rem;
   border-top: 1px solid #eae5e0;
   border-bottom: 1px solid #eae5e0;
+}
+
+/* Swipable Carousel Chevrons & Dots Overlay */
+.mainImageWrapper {
+  position: relative;
+}
+
+.sliderArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 15;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 0;
+}
+
+.sliderArrow:hover {
+  background: rgba(255, 255, 255, 0.95);
+  color: hsl(var(--color-primary));
+  transform: translateY(-50%) scale(1.08);
+}
+
+.prevArrow {
+  left: 1.25rem;
+}
+
+.nextArrow {
+  right: 1.25rem;
+}
+
+.sliderDots {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 15;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.sliderDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.sliderDot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.sliderDotActive {
+  background: #ffffff;
+  width: 20px;
+  border-radius: 4px;
 }
