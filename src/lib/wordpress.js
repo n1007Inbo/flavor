@@ -820,7 +820,7 @@ export async function getPosts(category = null, fetchAll = true) {
         const totalPages = totalPagesHeader ? parseInt(totalPagesHeader, 10) : 1;
         
         if (fetchAll && totalPages > 1) {
-          const maxPages = 15; // Sanity limit
+          const maxPages = 50; // Dynamic sanity limit supporting up to 5,000 posts
           const remainingPages = [];
           for (let p = 2; p <= Math.min(totalPages, maxPages); p++) {
             remainingPages.push(p);
