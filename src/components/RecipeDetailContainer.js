@@ -562,6 +562,7 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
             </ol>
           </div>
         </div>
+        </div>
       )}
 
       {/* You May Also Like Section */}
