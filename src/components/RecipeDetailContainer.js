@@ -273,21 +273,6 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
             />
             {images.length > 1 && (
               <>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev - 1 + images.length) % images.length); }}
-                  className={`${styles.sliderArrow} ${styles.prevArrow}`}
-                  aria-label="Previous image"
-                >
-                  <span className="material-symbols-outlined">chevron_left</span>
-                </button>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev + 1) % images.length); }}
-                  className={`${styles.sliderArrow} ${styles.nextArrow}`}
-                  aria-label="Next image"
-                >
-                  <span className="material-symbols-outlined">chevron_right</span>
-                </button>
-                
                 {/* Dots indicator */}
                 <div className={styles.sliderDots}>
                   {images.map((_, i) => (
@@ -305,30 +290,20 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
           {/* Premium parsed thumbnail gallery row - only displays when extra images exist */}
           {images.length > 1 && (
             <div className={styles.galleryRow}>
-              {images.slice(0, 4).map((imgUrl, idx) => {
-                const isMore = idx === 3 && images.length > 4;
-                const remainingCount = images.length - 4;
-
-                return (
-                  <div 
-                    key={idx} 
-                    className={`${styles.galleryItem} ${currentIndex === idx ? styles.galleryActive : ''}`}
-                    onClick={() => setCurrentIndex(idx)}
-                  >
-                    <Image 
-                      src={imgUrl} 
-                      alt={`Process ${idx + 1}`} 
-                      fill 
-                      onError={() => handleImageError(imgUrl)}
-                    />
-                    {isMore && (
-                      <div className={styles.galleryMoreOverlay}>
-                        <span>+{remainingCount} more</span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {images.map((imgUrl, idx) => (
+                <div 
+                  key={idx} 
+                  className={`${styles.galleryItem} ${currentIndex === idx ? styles.galleryActive : ''}`}
+                  onClick={() => setCurrentIndex(idx)}
+                >
+                  <Image 
+                    src={imgUrl} 
+                    alt={`Process ${idx + 1}`} 
+                    fill 
+                    onError={() => handleImageError(imgUrl)}
+                  />
+                </div>
+              ))}
             </div>
           )}
         </div>

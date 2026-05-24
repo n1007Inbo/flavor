@@ -122,8 +122,27 @@ export default function HomeContainer({ initialPosts = [], categories = [] }) {
               placeholder="Find your next favorite recipe..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const journalSection = document.getElementById('journal');
+                  if (journalSection) {
+                    journalSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }
+              }}
             />
-            <span className={`material-symbols-outlined ${styles.heroSearchIcon}`}>search</span>
+            <span 
+              className={`material-symbols-outlined ${styles.heroSearchIcon}`}
+              onClick={() => {
+                const journalSection = document.getElementById('journal');
+                if (journalSection) {
+                  journalSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              style={{ cursor: 'pointer' }}
+            >
+              search
+            </span>
           </div>
         </div>
       </section>

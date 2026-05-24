@@ -316,23 +316,69 @@ a {
   border-left: 2px solid hsl(var(--color-primary)) !important;
 }
 
-/* PRINT-ONLY CSS RULES */
+/* PRINT-ONLY COOKBOOK CSS RULES */
 @media print {
-  body {
+  html, body {
     background: #ffffff !important;
     color: #000000 !important;
+    font-family: 'Newsreader', Georgia, serif !important;
+    font-size: 11pt !important;
   }
-  
-  header, footer, .btn-outline, .btn-primary, form, #newsletter, #flavor-pairing, .wp-content > *:not(.recipe-card-box), .posts-page-hero, .tags-row, .back-btn-row {
+
+  /* Hide absolutely all non-cookbook page elements */
+  header, footer, nav, aside,
+  [class*="header"], [class*="footer"], [class*="Navbar_header"], [class*="Footer_footer"],
+  [class*="topSplit"], [class*="blogContentRow"], [class*="relatedSection"],
+  [class*="servingsScaler"], [class*="actionButtons"], [class*="dietTags"],
+  button, .btn-primary, .btn-outline,
+  #newsletter, #flavor-pairing, section:not([class*="recipeCardBox"]),
+  [class*="proTipCard"], [class*="recipeBoxScaler"] {
     display: none !important;
   }
-  
-  .recipe-card-box {
+
+  /* Make our premium Custom Recipe Box take up the entire print page */
+  [class*="recipeCardBox"] {
+    display: block !important;
     border: none !important;
     box-shadow: none !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+  }
+
+  [class*="recipeBoxHeader"] {
+    border-bottom: 2px solid #000000 !important;
+    padding-bottom: 1rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  [class*="recipeBoxPrintBtn"] {
+    display: none !important;
+  }
+
+  /* Elegant print grid layout */
+  [class*="bottomSplit"] {
+    display: grid !important;
+    grid-template-columns: 0.9fr 1.1fr !important;
+    gap: 2.5rem !important;
+  }
+
+  [class*="sectionTitle"] {
+    border-bottom: 1.5px solid #000000 !important;
+    padding-bottom: 0.25rem !important;
+    font-size: 1.4rem !important;
+  }
+
+  /* Style checkmarks or numbers clearly in print */
+  [class*="checkbox"] {
+    border: 1px solid #000000 !important;
+  }
+
+  [class*="stepCircle"] {
+    background: #000000 !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }
 

@@ -37,50 +37,60 @@ export default function PostContent({ content = '' }) {
         elements.forEach(el => el.remove());
       });
 
-      // Select all images, paragraphs containing images, and figure elements
-      const imageElements = Array.from(body.querySelectorAll('figure:has(img), p:has(img), img')).filter(el => {
-        // Keep elements that are direct children of the body, or immediate wrappers, to prevent breaking small grids
-        return el.parentElement === body || el.parentElement?.parentElement === body;
+      // Select all image wrapper elements in a robust way, filtering out nested duplicate selectors
+      const allImgNodes = Array.from(body.querySelectorAll('figure, p, img')).filter(el => {
+        if (el.tagName === 'IMG') return true;
+        return el.querySelector('img') !== null;
+      });
+
+      const imageElements = [];
+      allImgNodes.forEach(node => {
+        const hasParentInList = imageElements.some(parent => parent.contains(node));
+        if (!hasParentInList) {
+          const childrenIndices = [];
+          imageElements.forEach((existing, idx) => {
+            if (node.contains(existing)) {
+              childrenIndices.push(idx);
+            }
+          });
+          if (childrenIndices.length > 0) {
+            for (let idx = childrenIndices.length - 1; idx >= 0; idx--) {
+              imageElements.splice(childrenIndices[idx], 1);
+            }
+          }
+          imageElements.push(node);
+        }
       });
 
       const headingElements = Array.from(body.querySelectorAll('h2, h3, h4'));
 
-      // If we have multiple images and multiple headings, redistribute consecutive ones!
-      if (imageElements.length > 1 && headingElements.length > 1) {
-        let headingIndex = 0;
-
-        for (let i = 0; i < imageElements.length; i++) {
-          const currentImg = imageElements[i];
-
-          // Check if this image is consecutive to the previous one without any headings in between
-          if (i > 0) {
-            const prevImg = imageElements[i - 1];
-
-            let hasHeadingBetween = false;
-            let sibling = prevImg.nextSibling;
-            while (sibling && sibling !== currentImg) {
-              if (sibling.nodeType === Node.ELEMENT_NODE) {
-                if (sibling.matches('h2, h3, h4') || sibling.querySelector('h2, h3, h4')) {
-                  hasHeadingBetween = true;
-                  break;
-                }
-              }
-              sibling = sibling.nextSibling;
-            }
-
-            // If there's no heading between them, we have stacked/parallel images!
-            if (!hasHeadingBetween) {
-              // Move this consecutive image after the next available heading that is positioned after the previous image
-              while (headingIndex < headingElements.length) {
-                const targetHeading = headingElements[headingIndex];
-                headingIndex++;
-
-                // Ensure the heading is actually in the DOM (not deleted)
-                if (body.contains(targetHeading)) {
-                  targetHeading.after(currentImg);
-                  break;
-                }
-              }
+      // Cleanly distribute images: assign at most one image immediately after each heading
+      if (imageElements.length > 0 && headingElements.length > 0) {
+        const limit = Math.min(imageElements.length, headingElements.length);
+        
+        for (let i = 0; i < limit; i++) {
+          const img = imageElements[i];
+          const heading = headingElements[i];
+          if (body.contains(heading) && body.contains(img)) {
+            heading.after(img);
+          }
+        }
+        
+        // If we have remaining images, space them out after text paragraphs, or remove them to prevent consecutive stacking
+        if (imageElements.length > headingElements.length) {
+          const paragraphs = Array.from(body.querySelectorAll('p')).filter(p => 
+            !p.querySelector('img') && p.textContent.trim().length > 50
+          );
+          let pIndex = paragraphs.length - 1;
+          
+          for (let i = headingElements.length; i < imageElements.length; i++) {
+            const img = imageElements[i];
+            if (pIndex >= 0 && body.contains(paragraphs[pIndex])) {
+              paragraphs[pIndex].after(img);
+              pIndex -= 2; // Space out by at least 2 paragraphs
+            } else {
+              // Remove excessive stacked images that cannot be distributed, keeping it clean and professional
+              img.remove();
             }
           }
         }
