@@ -114,6 +114,13 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
     window.print();
   };
 
+  const handleJumpToRecipe = () => {
+    const cardEl = document.querySelector(`.${styles.recipeCardBox}`);
+    if (cardEl) {
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   // Generate dynamic, meaningful title headers for instruction steps based on actual content keywords
   const getStepHeader = (step, index) => {
     let text = "";
@@ -290,6 +297,11 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
               <span>{isBookmarked ? 'Saved to Cookbook' : 'Save to Cookbook'}</span>
             </button>
             
+            <button onClick={handleJumpToRecipe} className={styles.jumpButton}>
+              <span className="material-symbols-outlined">arrow_downward</span>
+              <span>Jump to Recipe</span>
+            </button>
+
             <button onClick={handlePrint} className={styles.printButton}>
               <span className="material-symbols-outlined">print</span>
               <span>Print Recipe</span>

@@ -280,6 +280,32 @@
   box-shadow: 0 4px 15px rgba(21, 66, 18, 0.2);
 }
 
+.jumpButton {
+  flex: 1;
+  background: hsl(var(--color-primary));
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  padding: 0.9rem 1.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(21, 66, 18, 0.2);
+}
+
+.jumpButton:hover {
+  transform: translateY(-1px);
+  background: #0f300c;
+  box-shadow: 0 6px 20px rgba(21, 66, 18, 0.3);
+}
+
 .printButton {
   flex: 1;
   background: #ffffff;

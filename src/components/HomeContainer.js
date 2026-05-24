@@ -21,10 +21,13 @@ export default function HomeContainer({ initialPosts = [], categories = [] }) {
   
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
+  const filterParam = searchParams.get('filter');
 
-  // Read URL query parameter for categories dynamically
+  // Read URL query parameter for categories and bookmarks dynamically
   useEffect(() => {
-    if (categoryParam) {
+    if (filterParam === 'bookmarks') {
+      setActiveCategory('Bookmarks');
+    } else if (categoryParam) {
       const matchedCat = categories.find(
         cat => cat.toLowerCase().trim() === categoryParam.toLowerCase().trim()
       );
@@ -36,7 +39,7 @@ export default function HomeContainer({ initialPosts = [], categories = [] }) {
     } else {
       setActiveCategory('All');
     }
-  }, [categoryParam, categories]);
+  }, [categoryParam, filterParam, categories]);
 
   // Reset page limit whenever category or search query changes
   useEffect(() => {
@@ -46,8 +49,18 @@ export default function HomeContainer({ initialPosts = [], categories = [] }) {
   // Dynamic filter logic combining categories, search bar, and Left Sidebar controls!
   const filteredPosts = initialPosts.filter((post) => {
     // 1. Category Filter (horizontal circle filter or dropdown filter)
-    const matchesCategory = activeCategory === 'All' || 
-      post.category.toLowerCase().trim() === activeCategory.toLowerCase().trim();
+    let matchesCategory = false;
+    if (activeCategory === 'All') {
+      matchesCategory = true;
+    } else if (activeCategory === 'Bookmarks') {
+      if (typeof window !== 'undefined') {
+        matchesCategory = localStorage.getItem(`bookmark-${post.slug}`) === 'true';
+      } else {
+        matchesCategory = false;
+      }
+    } else {
+      matchesCategory = post.category.toLowerCase().trim() === activeCategory.toLowerCase().trim();
+    }
     
     // 2. Search Box Filter
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -182,7 +195,7 @@ export default function HomeContainer({ initialPosts = [], categories = [] }) {
         <div className="container">
           <div className={styles.sectionHeader}>
             <span>Our Recipes</span>
-            <h2>Baking & Sweets Collection</h2>
+            <h2>{activeCategory === 'Bookmarks' ? 'My Saved Cookbook' : 'Baking & Sweets Collection'}</h2>
           </div>
 
           <div className={styles.mainLayout}>

@@ -259,11 +259,20 @@ a {
 }
 
 .wp-content img {
-  max-width: 100%;
-  height: auto;
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
   border-radius: var(--radius-md);
-  margin: 2.5rem 0;
+  margin: 2.5rem auto;
+  display: block;
   box-shadow: 0 10px 30px rgba(44, 37, 34, 0.03);
+}
+
+@media (max-width: 768px) {
+  .wp-content img {
+    max-height: 350px;
+    margin: 1.5rem auto;
+  }
 }
 
 /* NATIVE WP RECIPE MAKER PLUGIN AUTOMATED STYLING */

@@ -55,7 +55,7 @@ export default function Contact() {
                 <h3 className={styles.infoTitle}>Editorial Desk</h3>
                 <p className={styles.infoText}>
                   Send recipe submissions, editorial pitches, or general food science questions directly to our editorial team.<br /><br />
-                  <strong>editorial@flavorzing.com</strong>
+                  <strong>contact@flavorzing.com</strong>
                 </p>
               </div>
 
@@ -63,7 +63,7 @@ export default function Contact() {
                 <h3 className={styles.infoTitle}>Collaborations</h3>
                 <p className={styles.infoText}>
                   For partnership inquiries, food brand sponsorships, or cooking laboratory collaborations, contact Chef Elena.<br /><br />
-                  <strong>elena@flavorzing.com</strong>
+                  <strong>contact@flavorzing.com</strong>
                 </p>
               </div>
             </div>

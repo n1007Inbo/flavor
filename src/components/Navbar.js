@@ -139,12 +139,12 @@ export default function Navbar({ categories = [] }) {
 
           {/* Toolbar Actions (Bookmark & Profile Icon) matching Culinary Elegance mockups exactly */}
           <div className={styles.navActions}>
-            <button className={styles.actionIcon} aria-label="Cookbook Saves">
+            <Link href="/?filter=bookmarks#journal" className={styles.actionIcon} aria-label="Cookbook Saves" onClick={closeAllMenus}>
               <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>bookmark</span>
-            </button>
-            <button className={styles.actionIcon} aria-label="Profile Account">
+            </Link>
+            <Link href="/contact" className={styles.actionIcon} aria-label="Profile Account" onClick={closeAllMenus}>
               <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>account_circle</span>
-            </button>
+            </Link>
           </div>
         </div>
       </header>
