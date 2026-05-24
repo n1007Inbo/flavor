@@ -33,7 +33,7 @@ function formatQuantity(qty) {
 }
 
 export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
-  const { title, slug, excerpt, featuredImage, category, difficulty, prepTime, cookTime, calories, recipe, content } = post;
+  const { title, slug, excerpt, featuredImage, category, difficulty, prepTime, cookTime, calories, recipe, content, isCommercialReview } = post;
 
   const baseServings = recipe?.servings || 4;
   const [servings, setServings] = useState(baseServings);
@@ -315,46 +315,50 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
           <p className={styles.editorialExcerpt}>{excerpt || "A carefully crafted, flavor-harmonic masterpiece perfect for home cooking enthusiasts seeking elegant dining experiences."}</p>
 
           {/* Dynamic Highlight Metadata Grid */}
-          <div className={styles.metadataGrid}>
-            <div className={styles.metaBox}>
-              <span className="material-symbols-outlined">schedule</span>
-              <div className={styles.metaBoxContent}>
-                <span className={styles.metaLabel}>PREP TIME</span>
-                <span className={styles.metaValue}>{prepTime || "15 Mins"}</span>
+          {!isCommercialReview && (
+            <div className={styles.metadataGrid}>
+              <div className={styles.metaBox}>
+                <span className="material-symbols-outlined">schedule</span>
+                <div className={styles.metaBoxContent}>
+                  <span className={styles.metaLabel}>PREP TIME</span>
+                  <span className={styles.metaValue}>{prepTime || "15 Mins"}</span>
+                </div>
+              </div>
+              <div className={styles.metaBox}>
+                <span className="material-symbols-outlined">schedule</span>
+                <div className={styles.metaBoxContent}>
+                  <span className={styles.metaLabel}>COOK TIME</span>
+                  <span className={styles.metaValue}>{cookTime || "35 Mins"}</span>
+                </div>
+              </div>
+              <div className={styles.metaBox}>
+                <span className="material-symbols-outlined">restaurant</span>
+                <div className={styles.metaBoxContent}>
+                  <span className={styles.metaLabel}>SERVINGS</span>
+                  <span className={styles.metaValue}>{servings} People</span>
+                </div>
+              </div>
+              <div className={styles.metaBox}>
+                <span className="material-symbols-outlined">bolt</span>
+                <div className={styles.metaBoxContent}>
+                  <span className={styles.metaLabel}>CALORIES</span>
+                  <span className={styles.metaValue}>{calories || "420 kcal"}</span>
+                </div>
               </div>
             </div>
-            <div className={styles.metaBox}>
-              <span className="material-symbols-outlined">schedule</span>
-              <div className={styles.metaBoxContent}>
-                <span className={styles.metaLabel}>COOK TIME</span>
-                <span className={styles.metaValue}>{cookTime || "35 Mins"}</span>
-              </div>
-            </div>
-            <div className={styles.metaBox}>
-              <span className="material-symbols-outlined">restaurant</span>
-              <div className={styles.metaBoxContent}>
-                <span className={styles.metaLabel}>SERVINGS</span>
-                <span className={styles.metaValue}>{servings} People</span>
-              </div>
-            </div>
-            <div className={styles.metaBox}>
-              <span className="material-symbols-outlined">bolt</span>
-              <div className={styles.metaBoxContent}>
-                <span className={styles.metaLabel}>CALORIES</span>
-                <span className={styles.metaValue}>{calories || "420 kcal"}</span>
-              </div>
-            </div>
-          </div>
+          )}
 
           {/* Servings Adjustment Buttons */}
-          <div className={styles.servingsScaler}>
-            <span className={styles.scaleLabel}>Adjust Recipe Yield:</span>
-            <div className={styles.scaleControls}>
-              <button onClick={decrementServings} className={styles.scaleBtn} disabled={servings <= 1}>-</button>
-              <span className={styles.servingsCount}>{servings}</span>
-              <button onClick={incrementServings} className={styles.scaleBtn}>+</button>
+          {!isCommercialReview && (
+            <div className={styles.servingsScaler}>
+              <span className={styles.scaleLabel}>Adjust Recipe Yield:</span>
+              <div className={styles.scaleControls}>
+                <button onClick={decrementServings} className={styles.scaleBtn} disabled={servings <= 1}>-</button>
+                <span className={styles.servingsCount}>{servings}</span>
+                <button onClick={incrementServings} className={styles.scaleBtn}>+</button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Action Buttons */}
           <div className={styles.actionButtons}>
@@ -368,23 +372,29 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
               <span>{isBookmarked ? 'Saved to Cookbook' : 'Save to Cookbook'}</span>
             </button>
             
-            <button onClick={handleJumpToRecipe} className={styles.jumpButton}>
-              <span className="material-symbols-outlined">arrow_downward</span>
-              <span>Jump to Recipe</span>
-            </button>
+            {!isCommercialReview && (
+              <>
+                <button onClick={handleJumpToRecipe} className={styles.jumpButton}>
+                  <span className="material-symbols-outlined">arrow_downward</span>
+                  <span>Jump to Recipe</span>
+                </button>
 
-            <button onClick={handlePrint} className={styles.printButton}>
-              <span className="material-symbols-outlined">print</span>
-              <span>Print Recipe</span>
-            </button>
+                <button onClick={handlePrint} className={styles.printButton}>
+                  <span className="material-symbols-outlined">print</span>
+                  <span>Print Recipe</span>
+                </button>
+              </>
+            )}
           </div>
 
           {/* Organic Diet Pills */}
-          <div className={styles.dietTags}>
-            <span className={styles.dietPill}>Vegetarian</span>
-            <span className={styles.dietPill}>Gluten-Free</span>
-            <span className={styles.dietPill}>Organic Premium</span>
-          </div>
+          {!isCommercialReview && (
+            <div className={styles.dietTags}>
+              <span className={styles.dietPill}>Vegetarian</span>
+              <span className={styles.dietPill}>Gluten-Free</span>
+              <span className={styles.dietPill}>Organic Premium</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -396,7 +406,8 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
       )}
 
       {/* Unified premium boxed "Recipe Box" layout (Screenshot 4) */}
-      <div className={styles.recipeCardBox}>
+      {!isCommercialReview && (
+        <div className={styles.recipeCardBox}>
         {/* Box Card Header */}
         <div className={styles.recipeBoxHeader}>
           <div className={styles.recipeBoxTitleCol}>
@@ -551,7 +562,7 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
             </ol>
           </div>
         </div>
-      </div>
+      )}
 
       {/* You May Also Like Section */}
       {relatedPosts.length > 0 && (

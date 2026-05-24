@@ -641,7 +641,16 @@ function parsePost(post, categoryMap = {}) {
     }
 
     // Identify commercial / affiliate posts to classify them as "Reviews"
-    const isCommercialReview = titleStr.includes("decanter") || 
+    const nonRecipeCategories = [
+      'home decor', 'furniture', 'lighting', 'fashion', 'accessories', 
+      'product reviews', 'reviews', 'wellness', 'gadgets', 'electronics', 'decor'
+    ];
+    const isCommercialReviewCategory = category && nonRecipeCategories.some(nrc => 
+      category.toLowerCase().includes(nrc)
+    );
+
+    const isCommercialReview = !!isCommercialReviewCategory || 
+                               titleStr.includes("decanter") || 
                                titleStr.includes("mattress") || 
                                titleStr.includes("console table") || 
                                titleStr.includes("table lamp") || 
@@ -653,7 +662,26 @@ function parsePost(post, categoryMap = {}) {
                                titleStr.includes("vase") ||
                                titleStr.includes("review") ||
                                titleStr.includes("buying guide") ||
-                               titleStr.includes("best ");
+                               titleStr.includes("best ") ||
+                               titleStr.includes("blazer") ||
+                               titleStr.includes("purse") ||
+                               titleStr.includes("bracelet") ||
+                               titleStr.includes("watch") ||
+                               titleStr.includes("wallet") ||
+                               titleStr.includes("sunglasses") ||
+                               titleStr.includes("desk") ||
+                               titleStr.includes("backpack") ||
+                               titleStr.includes("purifier") ||
+                               titleStr.includes("art") ||
+                               titleStr.includes("fountain") ||
+                               titleStr.includes("fireplace") ||
+                               titleStr.includes("blanket") ||
+                               titleStr.includes("bag") ||
+                               titleStr.includes("boots") ||
+                               titleStr.includes("mirror") ||
+                               titleStr.includes("jacket") ||
+                               titleStr.includes("chandelier") ||
+                               titleStr.includes("sculpture");
 
     if (isCommercialReview) {
       category = "Reviews";
