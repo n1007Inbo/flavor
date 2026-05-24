@@ -640,6 +640,25 @@ function parsePost(post, categoryMap = {}) {
       } catch (e) {}
     }
 
+    // Identify commercial / affiliate posts to classify them as "Reviews"
+    const isCommercialReview = titleStr.includes("decanter") || 
+                               titleStr.includes("mattress") || 
+                               titleStr.includes("console table") || 
+                               titleStr.includes("table lamp") || 
+                               titleStr.includes("lamp") || 
+                               titleStr.includes("chair") || 
+                               titleStr.includes("sofa") || 
+                               titleStr.includes("rug") || 
+                               titleStr.includes("pillow") || 
+                               titleStr.includes("vase") ||
+                               titleStr.includes("review") ||
+                               titleStr.includes("buying guide") ||
+                               titleStr.includes("best ");
+
+    if (isCommercialReview) {
+      category = "Reviews";
+    }
+
     const wordCount = post.content?.rendered?.split(/\s+/).length || 100;
     const readTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
 
@@ -666,16 +685,6 @@ function parsePost(post, categoryMap = {}) {
 
     // dynamic recipe card fallback mapping based on title keywords and category tags
     const isCulinaryCategory = recipeCategoryNames.some(rc => category.toLowerCase().includes(rc));
-    
-    const isCommercialReview = titleStr.includes("decanter") || 
-                               titleStr.includes("mattress") || 
-                               titleStr.includes("console table") || 
-                               titleStr.includes("table lamp") || 
-                               titleStr.includes("chair") || 
-                               titleStr.includes("sofa") || 
-                               titleStr.includes("rug") || 
-                               titleStr.includes("pillow") || 
-                               titleStr.includes("vase");
 
     if (!recipe && isCulinaryCategory && !isCommercialReview) {
       if (titleStr.includes("steak") || titleStr.includes("beef") || titleStr.includes("meat")) {
@@ -740,7 +749,8 @@ function parsePost(post, categoryMap = {}) {
       totalTime: recipe?.totalTime || "35 mins",
       calories: recipe?.calories || "320 kcal",
       cuisine: cuisine,
-      mealType: mealType
+      mealType: mealType,
+      isCommercialReview: !!isCommercialReview
     };
   } catch (error) {
     console.error("Critical error inside unified parsePost engine, falling back to mock mapping:", error);
@@ -1017,8 +1027,13 @@ export async function getCategories() {
       'Salad', 'Seafood', 'Soup'
     ];
     
+    // Filter to only display premium culinary categories on the homepage
+    const filteredDecoded = decoded.filter(name => 
+      allowedCategories.some(ac => ac.toLowerCase() === name.toLowerCase().trim())
+    );
+    
     // Reorder categories: alphabetical order for organic alignment
-    return decoded.sort((a, b) => a.localeCompare(b));
+    return filteredDecoded.sort((a, b) => a.localeCompare(b));
   } catch (error) {
     console.error("Failed to fetch WordPress categories, using Mock Categories:", error);
     const categories = MOCK_POSTS.map(p => p.category);

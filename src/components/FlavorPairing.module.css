@@ -165,6 +165,45 @@
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }
+  .selectorList {
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 0.75rem;
+    padding: 0.5rem 0.2rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .selectorList::-webkit-scrollbar {
+    display: none;
+  }
+  .selectorBtn {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 0.8rem 1.4rem;
+    font-size: 0.95rem;
+    text-align: center;
+    justify-content: center;
+  }
+  .selectorBtn svg {
+    display: none;
+  }
+  .selectorBtn:hover {
+    transform: none;
+  }
+  .panelHeader {
+    text-align: center;
+  }
+  .ingredientTitle {
+    font-size: 2rem;
+    text-align: center;
+  }
+  .description {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.95rem;
+  }
 }
 
 @media (max-width: 768px) {
@@ -174,6 +213,17 @@
   .pairingsContainer {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+  .tabBar {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+    margin-bottom: 2.5rem;
+  }
+  .tabBtn {
+    justify-content: center;
+    width: 100%;
+    padding: 0.85rem 1.25rem;
   }
 }
 
@@ -403,14 +453,30 @@
     grid-template-columns: 1fr;
     gap: 1rem;
     padding: 1.5rem;
+    text-align: left;
   }
   .meterConnector {
     padding-top: 0;
     transform: rotate(90deg);
+    margin: 0.5rem 0;
   }
   .meterPanel {
     grid-template-columns: 1fr;
     gap: 2rem;
-    padding: 2rem 1.5rem;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+  }
+  .meterColumn {
+    justify-content: center;
+  }
+  .meterTextColumn {
+    align-items: center;
+    text-align: center;
+  }
+  .pairingTitle {
+    font-size: 1.6rem;
+  }
+  .chemNote {
+    font-size: 0.95rem;
   }
 }

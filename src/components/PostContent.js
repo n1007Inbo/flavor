@@ -37,6 +37,12 @@ export default function PostContent({ content = '' }) {
         elements.forEach(el => el.remove());
       });
 
+      // Inject robust client-side onerror handlers to hide any broken/cut images
+      const imgTags = body.querySelectorAll('img');
+      imgTags.forEach(img => {
+        img.setAttribute('onerror', "this.style.display='none'; if(this.parentElement && (this.parentElement.tagName === 'FIGURE' || this.parentElement.tagName === 'P')) { if (!this.parentElement.textContent.trim()) this.parentElement.style.display='none'; }");
+      });
+
       // Select all image wrapper elements in a robust way, filtering out nested duplicate selectors
       const allImgNodes = Array.from(body.querySelectorAll('figure, p, img')).filter(el => {
         if (el.tagName === 'IMG') return true;

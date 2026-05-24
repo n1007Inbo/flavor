@@ -48,6 +48,11 @@ export default function HomeContainer({ initialPosts = [], categories = [] }) {
 
   // Dynamic filter logic combining categories, search bar, and Left Sidebar controls!
   const filteredPosts = initialPosts.filter((post) => {
+    // Always exclude affiliate review posts from the homepage recipe grid and filters
+    if (post.isCommercialReview || post.category === 'Reviews') {
+      return false;
+    }
+
     // 1. Category Filter (horizontal circle filter or dropdown filter)
     let matchesCategory = false;
     if (activeCategory === 'All') {
