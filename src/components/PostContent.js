@@ -28,7 +28,9 @@ export default function PostContent({ content = '' }) {
         '.wprm-print-recipe-shortcode',
         '.wprm-recipe-jump',
         '.wprm-jump-to-recipe-shortcode',
-        '.wprm-nutrition-label-container'
+        '.wprm-nutrition-label-container',
+        '[class*="wprm-recipe"]',
+        '[id*="wprm-recipe"]'
       ];
       wprmSelectors.forEach(selector => {
         const elements = body.querySelectorAll(selector);

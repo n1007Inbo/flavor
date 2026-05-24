@@ -40,6 +40,32 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
   const [checkedIngredients, setCheckedIngredients] = useState({});
   const [doneSteps, setDoneSteps] = useState({});
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [images, setImages] = useState([featuredImage]);
+  const [activeImage, setActiveImage] = useState(featuredImage);
+
+  useEffect(() => {
+    setActiveImage(featuredImage);
+  }, [featuredImage]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && content) {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(content, 'text/html');
+        const imgElements = doc.querySelectorAll('img');
+        const urls = [featuredImage];
+        imgElements.forEach(img => {
+          const src = img.getAttribute('src');
+          if (src && !urls.includes(src)) {
+            urls.push(src);
+          }
+        });
+        setImages(urls);
+      } catch (error) {
+        console.error("Failed to parse images from content:", error);
+      }
+    }
+  }, [content, featuredImage]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -60,14 +86,16 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
 
   const scale = servings / baseServings;
 
-  const toggleIngredient = (index) => {
+  const toggleIngredient = (e, index) => {
+    e.stopPropagation();
     setCheckedIngredients(prev => ({
       ...prev,
       [index]: !prev[index]
     }));
   };
 
-  const toggleStep = (index) => {
+  const toggleStep = (e, index) => {
+    e.stopPropagation();
     setDoneSteps(prev => ({
       ...prev,
       [index]: !prev[index]
@@ -157,9 +185,9 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
 
   return (
     <div className={styles.container}>
-      {/* Top Split Layout (Screenshot 4) */}
+      {/* Top Split Layout */}
       <div className={styles.topSplit}>
-        {/* Left Column: Big Image & Thumbnail Gallery */}
+        {/* Left Column: Big Image & Dynamic Gallery */}
         <div className={styles.imageCol}>
           <div className={styles.badgeOverlay}>
             <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>star</span>
@@ -168,7 +196,7 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
           
           <div className={styles.mainImageWrapper}>
             <Image 
-              src={featuredImage} 
+              src={activeImage} 
               alt={title}
               fill
               className={styles.mainImage}
@@ -176,21 +204,30 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
             />
           </div>
 
-          {/* Premium mockup gallery row underneath main image */}
-          <div className={styles.galleryRow}>
-            <div className={styles.galleryItem}>
-              <Image src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=150&q=80" alt="Process 1" fill />
+          {/* Premium parsed thumbnail gallery row - only displays when extra images exist */}
+          {images.length > 1 && (
+            <div className={styles.galleryRow}>
+              {images.slice(0, 4).map((imgUrl, idx) => {
+                const isMore = idx === 3 && images.length > 4;
+                const remainingCount = images.length - 4;
+
+                return (
+                  <div 
+                    key={idx} 
+                    className={`${styles.galleryItem} ${activeImage === imgUrl ? styles.galleryActive : ''}`}
+                    onClick={() => setActiveImage(imgUrl)}
+                  >
+                    <Image src={imgUrl} alt={`Process ${idx + 1}`} fill />
+                    {isMore && (
+                      <div className={styles.galleryMoreOverlay}>
+                        <span>+{remainingCount} more</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            <div className={styles.galleryItem}>
-              <Image src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=150&q=80" alt="Process 2" fill />
-            </div>
-            <div className={styles.galleryItem}>
-              <Image src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=150&q=80" alt="Process 3" fill />
-            </div>
-            <div className={`${styles.galleryItem} ${styles.galleryMore}`}>
-              <span>+12 More</span>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Right Column: Editorial Title & Details */}
@@ -199,7 +236,7 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
           <h1 className={styles.editorialTitle}>{title}</h1>
           <p className={styles.editorialExcerpt}>{excerpt || "A carefully crafted, flavor-harmonic masterpiece perfect for home cooking enthusiasts seeking elegant dining experiences."}</p>
 
-          {/* Dynamic HSL Highlight Metadata Grid */}
+          {/* Dynamic Highlight Metadata Grid */}
           <div className={styles.metadataGrid}>
             <div className={styles.metaBox}>
               <span className="material-symbols-outlined">schedule</span>
@@ -241,7 +278,7 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
             </div>
           </div>
 
-          {/* Terracotta solid and Outline Buttons */}
+          {/* Action Buttons */}
           <div className={styles.actionButtons}>
             <button 
               onClick={toggleBookmark}
@@ -275,107 +312,165 @@ export default function RecipeDetailContainer({ post, relatedPosts = [] }) {
         </div>
       )}
 
-      {/* Bottom Split Layout: Checklist Ingredients & Circle Instructions (Screenshot 4) */}
-      <div className={styles.bottomSplit}>
-        {/* Left Column (40% width): Ingredients Checklist */}
-        <div className={styles.ingredientsCol}>
-          <h2 className={styles.sectionTitle}>Ingredients</h2>
-          <ul className={styles.ingredientsList}>
-            {ingredientList.map((item, index) => {
-              if (!item) return null;
-              const isChecked = !!checkedIngredients[index];
-              
-              let qty = null;
-              let unit = "";
-              let name = "";
-              
-              if (typeof item === 'string') {
-                name = item;
-              } else if (item && typeof item === 'object') {
-                qty = item.qty || null;
-                unit = item.unit || "";
-                name = item.name || "";
-              }
-              
-              const scaledQty = qty ? qty * scale : null;
-              
-              return (
-                <li 
-                  key={index} 
-                  className={`${styles.ingredientItem} ${isChecked ? styles.checked : ''}`}
-                  onClick={() => toggleIngredient(index)}
-                >
-                  <div className={styles.checkbox}>
-                    {isChecked && (
-                      <span className="material-symbols-outlined" style={{ fontSize: '14px', fontWeight: 'bold' }}>
-                        check
-                      </span>
-                    )}
-                  </div>
-                  <span className={styles.ingredientText}>
-                    {scaledQty && <span className={styles.qty}>{formatQuantity(scaledQty)} </span>}
-                    {unit && <span className={styles.unit}>{unit} </span>}
-                    <span>{name}</span>
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
+      {/* Unified premium boxed "Recipe Box" layout (Screenshot 4) */}
+      <div className={styles.recipeCardBox}>
+        {/* Box Card Header */}
+        <div className={styles.recipeBoxHeader}>
+          <div className={styles.recipeBoxTitleCol}>
+            <span className={styles.recipeBoxCategory}>Recipe Box</span>
+            <h2 className={styles.recipeBoxTitle}>{title}</h2>
+          </div>
+          
+          <button onClick={handlePrint} className={styles.recipeBoxPrintBtn}>
+            <span className="material-symbols-outlined">print</span>
+            <span>Print Recipe</span>
+          </button>
+        </div>
 
-          {/* Pro Tip Callout Card */}
-          <div className={styles.proTipCard}>
-            <div className={styles.proTipTitle}>PRO TIP</div>
-            <p className={styles.proTipText}>
-              "Keep your broth at a low simmer in a separate pot. Adding cold broth will slow down the cooking process and affect the creaminess."
-            </p>
+        {/* Recipe Box Metadata Bar */}
+        <div className={styles.recipeBoxMetaRow}>
+          <div className={styles.recipeBoxMetaItem}>
+            <span className="material-symbols-outlined">schedule</span>
+            <div>
+              <span className={styles.recipeBoxMetaLabel}>Prep Time</span>
+              <span className={styles.recipeBoxMetaVal}>{prepTime || "15 Mins"}</span>
+            </div>
+          </div>
+          <div className={styles.recipeBoxMetaItem}>
+            <span className="material-symbols-outlined">schedule</span>
+            <div>
+              <span className={styles.recipeBoxMetaLabel}>Cook Time</span>
+              <span className={styles.recipeBoxMetaVal}>{cookTime || "35 Mins"}</span>
+            </div>
+          </div>
+          <div className={styles.recipeBoxMetaItem}>
+            <span className="material-symbols-outlined">restaurant</span>
+            <div>
+              <span className={styles.recipeBoxMetaLabel}>Servings</span>
+              <span className={styles.recipeBoxMetaVal}>{servings} Servings</span>
+            </div>
+          </div>
+          <div className={styles.recipeBoxMetaItem}>
+            <span className="material-symbols-outlined">bolt</span>
+            <div>
+              <span className={styles.recipeBoxMetaLabel}>Calories</span>
+              <span className={styles.recipeBoxMetaVal}>{calories || "420 kcal"}</span>
+            </div>
           </div>
         </div>
 
-        {/* Right Column (60% width): Circle Instructions */}
-        <div className={styles.instructionsCol}>
-          <h2 className={styles.sectionTitle}>Instructions</h2>
-          <ol className={styles.instructionsList}>
-            {instructionSteps.map((step, index) => {
-              const isDone = !!doneSteps[index];
-              const stepTitle = getStepHeader(step, index);
-              
-              let stepText = "";
-              if (typeof step === 'string') {
-                stepText = step;
-              } else if (step && typeof step === 'object') {
-                stepText = step.text || step.name || "";
-              }
-              
-              // Strip out existing headers (e.g. "SAUTE THE MUSHROOMS:") from step description if present
-              const cleanStepText = typeof stepText === 'string' ? stepText.replace(/^([A-Z\s]{4,30})[:\-\.]/i, '').trim() : '';
+        {/* Servings Scaler Inside Card */}
+        <div className={styles.recipeBoxScaler}>
+          <span className={styles.recipeBoxScalerLabel}>Adjust Servings:</span>
+          <div className={styles.recipeBoxScalerControls}>
+            <button onClick={decrementServings} className={styles.recipeBoxScalerBtn} disabled={servings <= 1}>-</button>
+            <span className={styles.recipeBoxScalerCount}>{servings}</span>
+            <button onClick={incrementServings} className={styles.recipeBoxScalerBtn}>+</button>
+          </div>
+        </div>
 
-              return (
-                <li 
-                  key={index} 
-                  className={`${styles.instructionItem} ${isDone ? styles.stepDone : ''}`}
-                  onClick={() => toggleStep(index)}
-                >
-                  <div className={styles.stepCircle}>
-                    {isDone ? (
-                      <span className="material-symbols-outlined" style={{ fontSize: '16px', fontWeight: 'bold', color: '#ffffff' }}>
-                        check
-                      </span>
-                    ) : (
-                      index + 1
-                    )}
-                  </div>
-                  <div className={styles.stepContent}>
-                    <h3 className={styles.stepTitle}>{stepTitle}</h3>
-                    <p className={styles.stepDescription}>{cleanStepText}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
+        {/* Bottom Split Layout inside the card */}
+        <div className={styles.bottomSplit}>
+          {/* Left Column (40% width): Ingredients Checklist */}
+          <div className={styles.ingredientsCol}>
+            <h3 className={styles.sectionTitle}>Ingredients</h3>
+            <ul className={styles.ingredientsList}>
+              {ingredientList.map((item, index) => {
+                if (!item) return null;
+                const isChecked = !!checkedIngredients[index];
+                
+                let qty = null;
+                let unit = "";
+                let name = "";
+                
+                if (typeof item === 'string') {
+                  name = item;
+                } else if (item && typeof item === 'object') {
+                  qty = item.qty || null;
+                  unit = item.unit || "";
+                  name = item.name || "";
+                }
+                
+                const scaledQty = qty ? qty * scale : null;
+                
+                return (
+                  <li 
+                    key={index} 
+                    className={`${styles.ingredientItem} ${isChecked ? styles.checked : ''}`}
+                    onClick={(e) => toggleIngredient(e, index)}
+                  >
+                    <div className={styles.checkbox}>
+                      {isChecked && (
+                        <span className="material-symbols-outlined" style={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          check
+                        </span>
+                      )}
+                    </div>
+                    <span className={styles.ingredientText}>
+                      {scaledQty && <span className={styles.qty}>{formatQuantity(scaledQty)} </span>}
+                      {unit && <span className={styles.unit}>{unit} </span>}
+                      <span>{name}</span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* Pro Tip Callout Card */}
+            <div className={styles.proTipCard}>
+              <div className={styles.proTipTitle}>PRO TIP</div>
+              <p className={styles.proTipText}>
+                "Make sure to read through the entire set of steps before starting. Preparation is key to beautiful texture and perfect flavor balance!"
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column (60% width): Circle Instructions */}
+          <div className={styles.instructionsCol}>
+            <h3 className={styles.sectionTitle}>Instructions</h3>
+            <ol className={styles.instructionsList}>
+              {instructionSteps.map((step, index) => {
+                const isDone = !!doneSteps[index];
+                const stepTitle = getStepHeader(step, index);
+                
+                let stepText = "";
+                if (typeof step === 'string') {
+                  stepText = step;
+                } else if (step && typeof step === 'object') {
+                  stepText = step.text || step.name || "";
+                }
+                
+                // Strip out existing headers from description if present
+                const cleanStepText = typeof stepText === 'string' ? stepText.replace(/^([A-Z\s]{4,30})[:\-\.]/i, '').trim() : '';
+
+                return (
+                  <li 
+                    key={index} 
+                    className={`${styles.instructionItem} ${isDone ? styles.stepDone : ''}`}
+                    onClick={(e) => toggleStep(e, index)}
+                  >
+                    <div className={styles.stepCircle}>
+                      {isDone ? (
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px', fontWeight: 'bold', color: '#ffffff' }}>
+                          check
+                        </span>
+                      ) : (
+                        index + 1
+                      )}
+                    </div>
+                    <div className={styles.stepContent}>
+                      <h4 className={styles.stepTitle}>{stepTitle}</h4>
+                      <p className={styles.stepDescription}>{cleanStepText}</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
         </div>
       </div>
 
-      {/* You May Also Like Section (Stitch Grid) */}
+      {/* You May Also Like Section */}
       {relatedPosts.length > 0 && (
         <div className={styles.relatedSection}>
           <h2 className={styles.relatedTitle}>You May Also Like</h2>

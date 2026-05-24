@@ -4,10 +4,10 @@
   padding: 0 2rem;
 }
 
-/* Top Split Grid Layout (Screenshot 4) */
+/* Top Split Grid Layout */
 .topSplit {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1.1fr 0.9fr;
   gap: 4rem;
   margin-bottom: 4.5rem;
   align-items: start;
@@ -30,7 +30,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(21, 66, 18, 0.15);
-  color: var(--color-primary);
+  color: hsl(var(--color-primary));
   padding: 0.35rem 0.85rem;
   border-radius: 4px;
   font-family: var(--font-sans);
@@ -55,7 +55,7 @@
   object-fit: cover;
 }
 
-/* Thumbnails row underneath image */
+/* Dynamic Thumbnails Gallery Row */
 .galleryRow {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -70,33 +70,38 @@
   overflow: hidden;
   border: 1px solid #eae5e0;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .galleryItem:hover {
   transform: translateY(-2px);
+  border-color: hsl(var(--color-primary));
 }
 
 .galleryItem img {
   object-fit: cover;
 }
 
-.galleryMore {
+.galleryActive {
+  border: 2px solid hsl(var(--color-primary));
+  box-shadow: 0 0 10px rgba(21, 66, 18, 0.15);
+}
+
+.galleryMoreOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f1ede9;
-  border: 1px dashed #c6bbb0;
+  color: #ffffff;
   font-family: var(--font-sans);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #7d7266;
   text-transform: uppercase;
-  transition: background-color 0.2s ease;
-}
-
-.galleryMore:hover {
-  background: #eae5e0;
 }
 
 /* Right-hand Editorial Block */
@@ -111,7 +116,7 @@
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.15em;
-  color: var(--color-accent);
+  color: hsl(var(--color-accent));
   margin-bottom: 0.75rem;
 }
 
@@ -119,7 +124,7 @@
   font-family: var(--font-serif);
   font-size: 2.85rem;
   font-weight: 500;
-  color: var(--color-primary);
+  color: hsl(var(--color-primary));
   line-height: 1.15;
   margin-bottom: 1.25rem;
 }
@@ -132,7 +137,7 @@
   margin-bottom: 2rem;
 }
 
-/* HSL Highlight Grid */
+/* Metadata Grid */
 .metadataGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -152,7 +157,7 @@
 
 .metaBox span {
   font-size: 24px;
-  color: var(--color-primary);
+  color: hsl(var(--color-primary));
 }
 
 .metaBoxContent {
@@ -176,7 +181,7 @@
   color: #121212;
 }
 
-/* Servings Resizer styling */
+/* Servings Resizer */
 .servingsScaler {
   display: flex;
   align-items: center;
@@ -204,9 +209,9 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1.5px solid var(--color-primary);
+  border: 1.5px solid hsl(var(--color-primary));
   background: transparent;
-  color: var(--color-primary);
+  color: hsl(var(--color-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,7 +223,7 @@
 }
 
 .scaleBtn:hover:not(:disabled) {
-  background: var(--color-primary);
+  background: hsl(var(--color-primary));
   color: #ffffff;
 }
 
@@ -237,7 +242,7 @@
   text-align: center;
 }
 
-/* Call to actions */
+/* Action Buttons */
 .actionButtons {
   display: flex;
   gap: 1.25rem;
@@ -246,7 +251,7 @@
 
 .saveButton {
   flex: 1;
-  background: var(--color-accent);
+  background: hsl(var(--color-accent));
   color: #ffffff;
   border: none;
   border-radius: 30px;
@@ -271,15 +276,15 @@
 }
 
 .saveButton.saved {
-  background: var(--color-primary);
+  background: hsl(var(--color-primary));
   box-shadow: 0 4px 15px rgba(21, 66, 18, 0.2);
 }
 
 .printButton {
   flex: 1;
   background: #ffffff;
-  color: var(--color-primary);
-  border: 1.5px solid var(--color-primary);
+  color: hsl(var(--color-primary));
+  border: 1.5px solid hsl(var(--color-primary));
   border-radius: 30px;
   padding: 0.9rem 1.75rem;
   font-family: var(--font-sans);
@@ -317,33 +322,195 @@
   letter-spacing: 0.08em;
 }
 
-/* Bottom Split: Checklist Ingredients & Instructions (Screenshot 4) */
+/* Premium Boxed "Recipe Box" layout container */
+.recipeCardBox {
+  background: #ffffff;
+  border: 2px solid hsl(var(--color-primary));
+  border-radius: 12px;
+  padding: 3rem;
+  margin: 4.5rem 0;
+  box-shadow: 0 15px 45px rgba(21, 66, 18, 0.04);
+}
+
+.recipeBoxHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 2rem;
+  border-bottom: 1.5px solid #eae5e0;
+}
+
+.recipeBoxTitleCol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.recipeBoxCategory {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: hsl(var(--color-accent));
+  text-transform: uppercase;
+}
+
+.recipeBoxTitle {
+  font-family: var(--font-serif);
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: hsl(var(--color-primary));
+  line-height: 1.25;
+}
+
+.recipeBoxPrintBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: hsl(var(--color-primary));
+  border: 1.5px solid hsl(var(--color-primary));
+  padding: 0.6rem 1.25rem;
+  border-radius: 30px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.recipeBoxPrintBtn:hover {
+  background: hsl(var(--color-primary));
+  color: #ffffff;
+}
+
+/* Recipe Box Metadata Row */
+.recipeBoxMetaRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  padding: 2rem 0;
+  border-bottom: 1.5px solid #eae5e0;
+}
+
+.recipeBoxMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.recipeBoxMetaItem span {
+  font-size: 24px;
+  color: hsl(var(--color-primary));
+}
+
+.recipeBoxMetaItem > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.recipeBoxMetaLabel {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #8c8277;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.recipeBoxMetaVal {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #121212;
+}
+
+/* Servings Resizer inside Box */
+.recipeBoxScaler {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 0;
+  border-bottom: 1.5px solid #eae5e0;
+  margin-bottom: 2.5rem;
+}
+
+.recipeBoxScalerLabel {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #555555;
+}
+
+.recipeBoxScalerControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.recipeBoxScalerBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid hsl(var(--color-primary));
+  background: transparent;
+  color: hsl(var(--color-primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recipeBoxScalerBtn:hover:not(:disabled) {
+  background: hsl(var(--color-primary));
+  color: #ffffff;
+}
+
+.recipeBoxScalerBtn:disabled {
+  border-color: #d1c8c0;
+  color: #d1c8c0;
+  cursor: not-allowed;
+}
+
+.recipeBoxScalerCount {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #121212;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Columns layout inside Boxed Card */
 .bottomSplit {
   display: grid;
   grid-template-columns: 0.85fr 1.15fr;
-  gap: 5rem;
-  padding-top: 4.5rem;
-  border-top: 1px solid #eae5e0;
-  margin-bottom: 5.5rem;
+  gap: 4rem;
   align-items: start;
 }
 
 .sectionTitle {
   font-family: var(--font-serif);
-  font-size: 2.2rem;
+  font-size: 1.85rem;
   font-weight: 500;
-  color: var(--color-primary);
-  margin-bottom: 1.5rem;
+  color: hsl(var(--color-primary));
+  margin-bottom: 1.25rem;
+  border-bottom: 1.5px solid #eae5e0;
+  padding-bottom: 0.5rem;
 }
 
 /* Ingredients checklist styles */
 .ingredientsList {
   list-style: none;
   padding: 0;
-  margin: 1.5rem 0 3rem;
+  margin: 1.25rem 0 2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
 .ingredientItem {
@@ -351,29 +518,29 @@
   align-items: center;
   gap: 12px;
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: #121212;
   cursor: pointer;
-  padding: 0.5rem 0;
+  padding: 0.45rem 0;
   border-bottom: 1px dashed #eae5e0;
   transition: color 0.2s ease;
 }
 
 .checkbox {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 4px;
   border: 1.5px solid #c8bfb5;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--color-primary);
+  color: hsl(var(--color-primary));
   transition: all 0.2s ease;
 }
 
 .ingredientItem:hover .checkbox {
-  border-color: var(--color-primary);
+  border-color: hsl(var(--color-primary));
 }
 
 .ingredientItem.checked {
@@ -382,13 +549,13 @@
 }
 
 .ingredientItem.checked .checkbox {
-  border-color: var(--color-primary);
+  border-color: hsl(var(--color-primary));
   background: #e2ede0;
 }
 
 .qty {
   font-weight: 700;
-  color: var(--color-primary);
+  color: hsl(var(--color-primary));
 }
 
 .ingredientItem.checked .qty {
@@ -404,27 +571,27 @@
   color: #8c8277;
 }
 
-/* Pro Tip Callout Card styling exactly matching mockup visual specs */
+/* Pro Tip Card styling */
 .proTipCard {
-  border-left: 3px solid var(--color-accent);
+  border-left: 3px solid hsl(var(--color-accent));
   background: #fbf9f8;
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: 0 8px 8px 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.01);
 }
 
 .proTipTitle {
   font-family: var(--font-sans);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  color: var(--color-accent);
+  color: hsl(var(--color-accent));
   letter-spacing: 0.12em;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .proTipText {
   font-family: var(--font-sans);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-style: italic;
   line-height: 1.6;
   color: #555555;
@@ -434,18 +601,18 @@
 .instructionsList {
   list-style: none;
   padding: 0;
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
   display: flex;
   flex-direction: column;
-  gap: 2.25rem;
+  gap: 1.85rem;
 }
 
 .instructionItem {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.25rem;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
+  padding: 0.45rem;
+  border-radius: 6px;
   transition: background-color 0.2s ease;
 }
 
@@ -454,25 +621,25 @@
 }
 
 .stepCircle {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--color-primary);
+  background: hsl(var(--color-primary));
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 700;
   flex-shrink: 0;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 10px rgba(21, 66, 18, 0.15);
+  box-shadow: 0 4px 8px rgba(21, 66, 18, 0.15);
 }
 
 .instructionItem.stepDone .stepCircle {
-  background: var(--color-accent);
-  box-shadow: 0 4px 10px rgba(158, 66, 30, 0.15);
+  background: hsl(var(--color-accent));
+  box-shadow: 0 4px 8px rgba(158, 66, 30, 0.15);
 }
 
 .stepContent {
@@ -483,16 +650,16 @@
 
 .stepTitle {
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: hsl(var(--color-primary));
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .stepDescription {
   font-family: var(--font-sans);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   line-height: 1.65;
   color: #2c2623;
 }
@@ -502,7 +669,7 @@
   text-decoration: line-through;
 }
 
-/* You May Also Like Section (Stitch Grid) */
+/* You May Also Like Section */
 .relatedSection {
   border-top: 1px solid #eae5e0;
   padding-top: 4.5rem;
@@ -514,7 +681,7 @@
   font-size: 2.2rem;
   font-weight: 500;
   text-align: center;
-  color: var(--color-primary);
+  color: hsl(var(--color-primary));
   margin-bottom: 3.5rem;
 }
 
@@ -541,6 +708,13 @@
     grid-template-columns: 1fr;
     gap: 3rem;
   }
+  .recipeCardBox {
+    padding: 2rem;
+  }
+  .recipeBoxMetaRow {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
   .bottomSplit {
     grid-template-columns: 1fr;
     gap: 3.5rem;
@@ -557,8 +731,11 @@
   .editorialTitle {
     font-size: 2.25rem;
   }
+  .recipeBoxTitle {
+    font-size: 1.75rem;
+  }
   .sectionTitle {
-    font-size: 1.85rem;
+    font-size: 1.65rem;
   }
   .metadataGrid {
     grid-template-columns: 1fr;
@@ -577,6 +754,18 @@
   .relatedTitle {
     font-size: 1.85rem;
     margin-bottom: 2.5rem;
+  }
+  .recipeBoxMetaRow {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .recipeBoxHeader {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .recipeBoxPrintBtn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
