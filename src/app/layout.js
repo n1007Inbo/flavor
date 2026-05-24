@@ -2,6 +2,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { getCategories } from '@/lib/wordpress';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 export const metadata = {
   title: 'FlavorZing | The Art & Science of Culinary Pairings',
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }) {
         </main>
         <Footer />
       </body>
+      <GoogleAnalytics gaId="G-F1C9E79E66" />
     </html>
   );
 }
